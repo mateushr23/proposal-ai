@@ -19,11 +19,11 @@ router.post('/register', asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required' });
+    return res.status(400).json({ error: 'E-mail e senha são obrigatórios' });
   }
 
   if (password.length < 6) {
-    return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    return res.status(400).json({ error: 'A senha precisa ter no mínimo 6 caracteres' });
   }
 
   // Check for existing user
@@ -33,7 +33,7 @@ router.post('/register', asyncHandler(async (req, res) => {
   );
 
   if (existing.length > 0) {
-    return res.status(409).json({ error: 'Email already registered' });
+    return res.status(409).json({ error: 'Este e-mail já está cadastrado' });
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
@@ -56,7 +56,7 @@ router.post('/login', asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required' });
+    return res.status(400).json({ error: 'E-mail e senha são obrigatórios' });
   }
 
   const { rows } = await pool.query(
@@ -65,14 +65,14 @@ router.post('/login', asyncHandler(async (req, res) => {
   );
 
   if (rows.length === 0) {
-    return res.status(401).json({ error: 'Invalid credentials' });
+    return res.status(401).json({ error: 'E-mail ou senha incorretos' });
   }
 
   const user = rows[0];
   const validPassword = await bcrypt.compare(password, user.password_hash);
 
   if (!validPassword) {
-    return res.status(401).json({ error: 'Invalid credentials' });
+    return res.status(401).json({ error: 'E-mail ou senha incorretos' });
   }
 
   const token = generateToken(user);

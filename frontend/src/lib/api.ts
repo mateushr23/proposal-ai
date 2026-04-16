@@ -43,7 +43,7 @@ class ApiClient {
 
     const response = await fetch(`${BASE_URL}${endpoint}`, config);
 
-    if (response.status === 401) {
+    if (response.status === 401 && !endpoint.startsWith("/api/auth/")) {
       this.clearAuth();
       throw new Error("Sessão expirada. Faça login novamente.");
     }

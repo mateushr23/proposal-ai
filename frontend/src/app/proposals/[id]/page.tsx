@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { GlassCard } from "@/components/GlassCard";
 import { SectionEditor } from "@/components/SectionEditor";
@@ -49,6 +49,7 @@ function SkeletonDetail() {
 export default function ProposalDetailPage() {
   const params = useParams();
   const id = params.id as string;
+  const router = useRouter();
   const { showToast } = useToast();
 
   const [proposal, setProposal] = useState<Proposal | null>(null);
@@ -59,6 +60,8 @@ export default function ProposalDetailPage() {
   const [editedContent, setEditedContent] = useState<ProposalContent | null>(null);
   const [statusConfirm, setStatusConfirm] = useState<ProposalStatus | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   const fetchProposal = useCallback(async () => {
     setLoading(true);
@@ -207,6 +210,19 @@ export default function ProposalDetailPage() {
     }
   }
 
+  async function handleDelete() {
+    setDeleting(true);
+    try {
+      await api.delete(`/api/proposals/${id}`);
+      showToast("Proposta excluída", "success");
+      router.push("/proposals");
+    } catch {
+      showToast("Erro ao excluir proposta", "error");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   async function handleStatusChange() {
     if (!statusConfirm) return;
     setUpdatingStatus(true);
@@ -285,6 +301,18 @@ export default function ProposalDetailPage() {
           </p>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
+          <Button
+            variant="ghost"
+            size="md"
+            onClick={() => setDeleteConfirmOpen(true)}
+            icon={
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 4h10M6 4V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1M5 4v9a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V4" />
+              </svg>
+            }
+          >
+            Excluir
+          </Button>
           <Button
             variant="secondary"
             size="md"
@@ -399,6 +427,16 @@ export default function ProposalDetailPage() {
           </div>
         </div>
       )}
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        title="Excluir proposta?"
+        message="Essa ação não pode ser desfeita. A proposta será removida permanentemente."
+        confirmLabel="Excluir"
+        cancelLabel="Cancelar"
+        variant="error"
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteConfirmOpen(false)}
+      />
       {statusConfirm && statusDialogConfig[statusConfirm] && (
         <ConfirmDialog
           open={!!statusConfirm}
