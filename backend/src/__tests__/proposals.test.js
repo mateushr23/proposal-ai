@@ -1,6 +1,7 @@
 const request = require('supertest');
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 // ---- Mock setup ----
 const mockQuery = jest.fn();
@@ -22,6 +23,7 @@ const errorHandler = require('../middleware/errorHandler');
 
 function buildApp() {
   const app = express();
+  app.use(cookieParser());
   app.use(express.json());
   app.use('/api/proposals', proposalRoutes);
   app.use(errorHandler);
@@ -66,7 +68,7 @@ describe('GET /api/proposals', () => {
 
     const res = await request(app)
       .get('/api/proposals')
-      .set('Authorization', `Bearer ${token}`);
+      .set('Cookie', `token=${token}`);
 
     expect(res.status).toBe(200);
     expect(res.body.proposals).toHaveLength(1);
@@ -92,7 +94,7 @@ describe('GET /api/proposals/:id', () => {
 
     const res = await request(app)
       .get(`/api/proposals/${PROPOSAL_ID}`)
-      .set('Authorization', `Bearer ${token}`);
+      .set('Cookie', `token=${token}`);
 
     expect(res.status).toBe(200);
     expect(res.body.client_name).toBe('Acme Corp');
@@ -105,7 +107,7 @@ describe('GET /api/proposals/:id', () => {
 
     const res = await request(app)
       .get('/api/proposals/nonexistent')
-      .set('Authorization', `Bearer ${token}`);
+      .set('Cookie', `token=${token}`);
 
     expect(res.status).toBe(404);
   });
@@ -117,7 +119,7 @@ describe('GET /api/proposals/:id', () => {
 
     const res = await request(app)
       .get(`/api/proposals/${PROPOSAL_ID}`)
-      .set('Authorization', `Bearer ${token}`);
+      .set('Cookie', `token=${token}`);
 
     expect(res.status).toBe(403);
     expect(res.body.error).toMatch(/forbidden/i);
@@ -139,7 +141,7 @@ describe('POST /api/proposals', () => {
 
     const res = await request(app)
       .post('/api/proposals')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Cookie', `token=${token}`)
       .send({
         client_name: 'Acme Corp',
         segment: 'Tecnologia',
@@ -156,7 +158,7 @@ describe('POST /api/proposals', () => {
   it('returns 400 when required fields are missing', async () => {
     const res = await request(app)
       .post('/api/proposals')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Cookie', `token=${token}`)
       .send({ client_name: 'Only Name' });
 
     expect(res.status).toBe(400);
@@ -182,7 +184,7 @@ describe('PUT /api/proposals/:id', () => {
 
     const res = await request(app)
       .put(`/api/proposals/${PROPOSAL_ID}`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Cookie', `token=${token}`)
       .send({ client_name: 'Updated Corp' });
 
     expect(res.status).toBe(200);
@@ -194,7 +196,7 @@ describe('PUT /api/proposals/:id', () => {
 
     const res = await request(app)
       .put(`/api/proposals/${PROPOSAL_ID}`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Cookie', `token=${token}`)
       .send({ client_name: 'Hacked' });
 
     expect(res.status).toBe(403);
@@ -205,7 +207,7 @@ describe('PUT /api/proposals/:id', () => {
 
     const res = await request(app)
       .put('/api/proposals/nonexistent')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Cookie', `token=${token}`)
       .send({ client_name: 'X' });
 
     expect(res.status).toBe(404);
@@ -228,7 +230,7 @@ describe('PATCH /api/proposals/:id/status', () => {
 
     const res = await request(app)
       .patch(`/api/proposals/${PROPOSAL_ID}/status`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Cookie', `token=${token}`)
       .send({ status: 'sent' });
 
     expect(res.status).toBe(200);
@@ -238,7 +240,7 @@ describe('PATCH /api/proposals/:id/status', () => {
   it('returns 400 for invalid status value', async () => {
     const res = await request(app)
       .patch(`/api/proposals/${PROPOSAL_ID}/status`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Cookie', `token=${token}`)
       .send({ status: 'invalid_status' });
 
     expect(res.status).toBe(400);
@@ -250,7 +252,7 @@ describe('PATCH /api/proposals/:id/status', () => {
 
     const res = await request(app)
       .patch(`/api/proposals/${PROPOSAL_ID}/status`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Cookie', `token=${token}`)
       .send({ status: 'sent' });
 
     expect(res.status).toBe(403);
@@ -271,7 +273,7 @@ describe('DELETE /api/proposals/:id', () => {
 
     const res = await request(app)
       .delete(`/api/proposals/${PROPOSAL_ID}`)
-      .set('Authorization', `Bearer ${token}`);
+      .set('Cookie', `token=${token}`);
 
     expect(res.status).toBe(200);
     expect(res.body.message).toMatch(/deleted/i);
@@ -282,7 +284,7 @@ describe('DELETE /api/proposals/:id', () => {
 
     const res = await request(app)
       .delete('/api/proposals/nonexistent')
-      .set('Authorization', `Bearer ${token}`);
+      .set('Cookie', `token=${token}`);
 
     expect(res.status).toBe(404);
   });
@@ -292,7 +294,7 @@ describe('DELETE /api/proposals/:id', () => {
 
     const res = await request(app)
       .delete(`/api/proposals/${PROPOSAL_ID}`)
-      .set('Authorization', `Bearer ${token}`);
+      .set('Cookie', `token=${token}`);
 
     expect(res.status).toBe(403);
   });
@@ -333,7 +335,7 @@ describe('POST /api/proposals/:id/generate', () => {
 
     const res = await request(app)
       .post(`/api/proposals/${PROPOSAL_ID}/generate`)
-      .set('Authorization', `Bearer ${token}`);
+      .set('Cookie', `token=${token}`);
 
     expect(res.status).toBe(200);
     expect(res.body.content).toEqual(generatedContent);
@@ -363,7 +365,7 @@ describe('POST /api/proposals/:id/generate', () => {
 
     const res = await request(app)
       .post(`/api/proposals/${PROPOSAL_ID}/generate`)
-      .set('Authorization', `Bearer ${token}`);
+      .set('Cookie', `token=${token}`);
 
     expect(res.status).toBe(502);
   });
@@ -375,7 +377,7 @@ describe('POST /api/proposals/:id/generate', () => {
 
     const res = await request(app)
       .post(`/api/proposals/${PROPOSAL_ID}/generate`)
-      .set('Authorization', `Bearer ${token}`);
+      .set('Cookie', `token=${token}`);
 
     expect(res.status).toBe(403);
   });
@@ -385,7 +387,7 @@ describe('POST /api/proposals/:id/generate', () => {
 
     const res = await request(app)
       .post('/api/proposals/nonexistent/generate')
-      .set('Authorization', `Bearer ${token}`);
+      .set('Cookie', `token=${token}`);
 
     expect(res.status).toBe(404);
   });

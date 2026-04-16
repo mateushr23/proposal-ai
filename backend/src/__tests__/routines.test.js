@@ -1,6 +1,7 @@
 const request = require('supertest');
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 // ---- Mock setup ----
 const mockQuery = jest.fn();
@@ -24,6 +25,7 @@ const errorHandler = require('../middleware/errorHandler');
 
 function buildApp() {
   const app = express();
+  app.use(cookieParser());
   app.use(express.json());
   app.use('/api/routines', routineRoutes);
   app.use(errorHandler);
@@ -74,7 +76,7 @@ describe('GET /api/routines/logs', () => {
 
     const res = await request(app)
       .get('/api/routines/logs')
-      .set('Authorization', `Bearer ${token}`);
+      .set('Cookie', `token=${token}`);
 
     expect(res.status).toBe(200);
     expect(res.body.logs).toHaveLength(2);
@@ -88,7 +90,7 @@ describe('GET /api/routines/logs', () => {
 
     const res = await request(app)
       .get('/api/routines/logs')
-      .set('Authorization', `Bearer ${token}`);
+      .set('Cookie', `token=${token}`);
 
     expect(res.status).toBe(200);
     expect(res.body.logs).toEqual([]);
@@ -116,7 +118,7 @@ describe('POST /api/routines/follow-up/trigger', () => {
 
     const res = await request(app)
       .post('/api/routines/follow-up/trigger')
-      .set('Authorization', `Bearer ${token}`);
+      .set('Cookie', `token=${token}`);
 
     expect(res.status).toBe(202);
     expect(res.body.message).toMatch(/triggered/i);
@@ -134,7 +136,7 @@ describe('POST /api/routines/follow-up/trigger', () => {
 
     await request(app)
       .post('/api/routines/follow-up/trigger')
-      .set('Authorization', `Bearer ${token}`);
+      .set('Cookie', `token=${token}`);
 
     // First call should be the INSERT into routine_logs
     const firstCall = mockQuery.mock.calls[0];

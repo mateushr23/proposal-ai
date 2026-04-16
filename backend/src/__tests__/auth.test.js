@@ -2,6 +2,7 @@ const request = require('supertest');
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 // ---- Mock setup ----
 
@@ -23,6 +24,7 @@ const errorHandler = require('../middleware/errorHandler');
 
 function buildApp() {
   const app = express();
+  app.use(cookieParser());
   app.use(express.json());
   app.use('/api/auth', authRoutes);
   app.use(errorHandler);
@@ -52,11 +54,13 @@ describe('POST /api/auth/register', () => {
       .send({ email: 'test@example.com', password: 'password123' });
 
     expect(res.status).toBe(201);
-    expect(res.body).toHaveProperty('token');
+    expect(res.headers['set-cookie']).toBeDefined();
     expect(res.body.user).toEqual({ id: 'uuid-1', email: 'test@example.com' });
 
     // Verify the token is valid
-    const decoded = jwt.verify(res.body.token, process.env.JWT_SECRET);
+    const cookie = res.headers['set-cookie'][0];
+    const cookieToken = cookie.match(/token=([^;]+)/)[1];
+    const decoded = jwt.verify(cookieToken, process.env.JWT_SECRET);
     expect(decoded.id).toBe('uuid-1');
     expect(decoded.email).toBe('test@example.com');
   });
@@ -136,7 +140,7 @@ describe('POST /api/auth/login', () => {
       .send({ email: 'user@example.com', password: 'correctpassword' });
 
     expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('token');
+    expect(res.headers['set-cookie']).toBeDefined();
     expect(res.body.user).toEqual({ id: 'uuid-login', email: 'user@example.com' });
   });
 
@@ -176,8 +180,9 @@ describe('POST /api/auth/login', () => {
 });
 
 describe('Protected route without token', () => {
-  it('returns 401 when no Authorization header is sent', async () => {
+  it('returns 401 when no cookie is sent', async () => {
     const app = express();
+    app.use(cookieParser());
     app.use(express.json());
 
     const authMiddleware = require('../middleware/auth');
@@ -194,6 +199,7 @@ describe('Protected route without token', () => {
 
   it('returns 401 when token is invalid', async () => {
     const app = express();
+    app.use(cookieParser());
     app.use(express.json());
 
     const authMiddleware = require('../middleware/auth');
@@ -204,7 +210,7 @@ describe('Protected route without token', () => {
 
     const res = await request(app)
       .get('/api/protected')
-      .set('Authorization', 'Bearer invalid-token-here');
+      .set('Cookie', 'token=invalid-token-here');
 
     expect(res.status).toBe(401);
     expect(res.body.error).toMatch(/invalid or expired/i);
@@ -212,6 +218,7 @@ describe('Protected route without token', () => {
 
   it('passes when a valid token is provided', async () => {
     const app = express();
+    app.use(cookieParser());
     app.use(express.json());
 
     const authMiddleware = require('../middleware/auth');
@@ -224,7 +231,7 @@ describe('Protected route without token', () => {
 
     const res = await request(app)
       .get('/api/protected')
-      .set('Authorization', `Bearer ${token}`);
+      .set('Cookie', `token=${token}`);
 
     expect(res.status).toBe(200);
     expect(res.body.user).toEqual({ id: 'uid-1', email: 'a@b.com' });

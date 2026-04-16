@@ -11,7 +11,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "./api";
-import type { AuthResponse, User } from "@/types";
+import type { User } from "@/types";
 
 interface AuthContextValue {
   user: User | null;
@@ -19,26 +19,10 @@ interface AuthContextValue {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
-
-function getStoredUser(): User | null {
-  if (typeof window === "undefined") return null;
-  const stored = localStorage.getItem("user");
-  if (!stored) return null;
-  try {
-    return JSON.parse(stored) as User;
-  } catch {
-    return null;
-  }
-}
-
-function getStoredToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("token");
-}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -46,22 +30,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const storedUser = getStoredUser();
-    const storedToken = getStoredToken();
-    if (storedUser && storedToken) {
-      setUser(storedUser);
-    }
-    setIsLoading(false);
+    api.get<{ user: User }>("/api/auth/me")
+      .then((data) => setUser(data.user))
+      .catch(() => setUser(null))
+      .finally(() => setIsLoading(false));
   }, []);
 
   const login = useCallback(
     async (email: string, password: string) => {
-      const data = await api.post<AuthResponse>("/api/auth/login", {
+      const data = await api.post<{ user: User }>("/api/auth/login", {
         email,
         password,
       });
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
       setUser(data.user);
       router.push("/proposals");
     },
@@ -70,21 +50,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = useCallback(
     async (email: string, password: string) => {
-      const data = await api.post<AuthResponse>("/api/auth/register", {
+      const data = await api.post<{ user: User }>("/api/auth/register", {
         email,
         password,
       });
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
       setUser(data.user);
       router.push("/proposals");
     },
     [router]
   );
 
-  const logout = useCallback(() => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+  const logout = useCallback(async () => {
+    try {
+      await api.post("/api/auth/logout");
+    } catch {
+      // ignore
+    }
     setUser(null);
     router.push("/login");
   }, [router]);

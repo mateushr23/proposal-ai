@@ -1,18 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
-// Mock localStorage
-const localStorageMock = (() => {
-  let store: Record<string, string> = {}
-  return {
-    getItem: vi.fn((key: string) => store[key] ?? null),
-    setItem: vi.fn((key: string, value: string) => { store[key] = value }),
-    removeItem: vi.fn((key: string) => { delete store[key] }),
-    clear: vi.fn(() => { store = {} }),
-  }
-})()
-
-Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-
 // Mock window.location
 const locationMock = { href: '' }
 Object.defineProperty(window, 'location', {
@@ -29,7 +16,6 @@ import { api } from '@/lib/api'
 
 describe('ApiClient', () => {
   beforeEach(() => {
-    localStorageMock.clear()
     mockFetch.mockReset()
     locationMock.href = ''
   })
@@ -54,23 +40,7 @@ describe('ApiClient', () => {
     expect(result).toEqual({ data: 'test' })
   })
 
-  it('attaches Authorization header when token exists in localStorage', async () => {
-    localStorageMock.setItem('token', 'my-jwt-token')
-
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      json: async () => ({ proposals: [] }),
-    })
-
-    await api.get('/api/proposals')
-
-    const callArgs = mockFetch.mock.calls[0]
-    const headers = callArgs[1].headers
-    expect(headers['Authorization']).toBe('Bearer my-jwt-token')
-  })
-
-  it('does not attach Authorization header when no token', async () => {
+  it('sets credentials to include on all fetch calls', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
@@ -80,8 +50,7 @@ describe('ApiClient', () => {
     await api.get('/api/health')
 
     const callArgs = mockFetch.mock.calls[0]
-    const headers = callArgs[1].headers
-    expect(headers['Authorization']).toBeUndefined()
+    expect(callArgs[1].credentials).toBe('include')
   })
 
   it('sends JSON body on POST requests', async () => {
@@ -138,10 +107,7 @@ describe('ApiClient', () => {
     expect(callArgs[1].method).toBe('DELETE')
   })
 
-  it('clears auth and redirects to /login on 401 response', async () => {
-    localStorageMock.setItem('token', 'expired-token')
-    localStorageMock.setItem('user', '{"id":"1"}')
-
+  it('redirects to /login on 401 for non-auth routes', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,
       status: 401,
@@ -150,9 +116,19 @@ describe('ApiClient', () => {
 
     await expect(api.get('/api/proposals')).rejects.toThrow()
 
-    expect(localStorageMock.removeItem).toHaveBeenCalledWith('token')
-    expect(localStorageMock.removeItem).toHaveBeenCalledWith('user')
     expect(locationMock.href).toBe('/login')
+  })
+
+  it('does not redirect on 401 for /api/auth/ routes', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 401,
+      json: async () => ({ error: 'Invalid credentials' }),
+    })
+
+    await expect(api.post('/api/auth/login', { email: 'a@b.com', password: 'x' })).rejects.toThrow()
+
+    expect(locationMock.href).toBe('')
   })
 
   it('throws error with status for non-401 error responses', async () => {

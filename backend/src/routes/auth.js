@@ -6,6 +6,16 @@ const asyncHandler = require('../utils/asyncHandler');
 
 const router = express.Router();
 
+function setTokenCookie(res, token) {
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    path: '/',
+  });
+}
+
 function generateToken(user) {
   return jwt.sign(
     { id: user.id, email: user.email },
@@ -45,8 +55,8 @@ router.post('/register', asyncHandler(async (req, res) => {
 
   const token = generateToken(user);
 
+  setTokenCookie(res, token);
   res.status(201).json({
-    token,
     user: { id: user.id, email: user.email },
   });
 }));
@@ -77,10 +87,31 @@ router.post('/login', asyncHandler(async (req, res) => {
 
   const token = generateToken(user);
 
+  setTokenCookie(res, token);
   res.json({
-    token,
     user: { id: user.id, email: user.email },
   });
 }));
+
+// POST /api/auth/logout
+router.post('/logout', (req, res) => {
+  res.clearCookie('token', { path: '/' });
+  res.json({ message: 'Logout realizado' });
+});
+
+// GET /api/auth/me — return current user from cookie token
+router.get('/me', (req, res) => {
+  const token = req.cookies?.token;
+  if (!token) {
+    return res.status(401).json({ error: 'Não autenticado' });
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
+    res.json({ user: { id: decoded.id, email: decoded.email } });
+  } catch {
+    res.clearCookie('token', { path: '/' });
+    return res.status(401).json({ error: 'Token inválido' });
+  }
+});
 
 module.exports = router;

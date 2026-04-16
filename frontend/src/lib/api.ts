@@ -3,48 +3,28 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 interface RequestOptions {
   method?: string;
   body?: unknown;
-  headers?: Record<string, string>;
 }
 
 class ApiClient {
-  private getToken(): string | null {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem("token");
-  }
-
-  private clearAuth(): void {
-    if (typeof window === "undefined") return;
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.href = "/login";
-  }
-
   async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-    const { method = "GET", body, headers = {} } = options;
-
-    const token = this.getToken();
-    const requestHeaders: Record<string, string> = {
-      "Content-Type": "application/json",
-      ...headers,
-    };
-
-    if (token) {
-      requestHeaders["Authorization"] = `Bearer ${token}`;
-    }
+    const { method = "GET", body } = options;
 
     const config: RequestInit = {
       method,
-      headers: requestHeaders,
+      credentials: "include",
     };
 
     if (body !== undefined) {
+      config.headers = { "Content-Type": "application/json" };
       config.body = JSON.stringify(body);
     }
 
     const response = await fetch(`${BASE_URL}${endpoint}`, config);
 
     if (response.status === 401 && !endpoint.startsWith("/api/auth/")) {
-      this.clearAuth();
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
       throw new Error("Sessão expirada. Faça login novamente.");
     }
 
