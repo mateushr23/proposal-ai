@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, type SyntheticEvent } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/components/Toast";
@@ -21,18 +21,18 @@ export default function LoginPage() {
     if (!email.trim()) {
       newErrors.email = "Informe seu e-mail";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "E-mail invalido";
+      newErrors.email = "E-mail inválido";
     }
     if (!password) {
       newErrors.password = "Informe sua senha";
     } else if (password.length < 6) {
-      newErrors.password = "A senha precisa ter no minimo 6 caracteres";
+      newErrors.password = "A senha precisa ter no mínimo 6 caracteres";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!validate()) return;
 
@@ -68,7 +68,7 @@ export default function LoginPage() {
             ProposalAI
           </p>
           <p className="mt-3 text-lg text-white/80">
-            Propostas comerciais com inteligencia artificial
+            Propostas comerciais com inteligência artificial
           </p>
         </div>
       </div>
@@ -126,7 +126,7 @@ export default function LoginPage() {
                 href="/register"
                 className="text-sm text-accent hover:underline"
               >
-                Ainda nao tem conta? Cadastre-se
+                Ainda não tem conta? Cadastre-se
               </Link>
             </div>
           </GlassCard>

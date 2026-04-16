@@ -33,7 +33,7 @@ function formatDuration(start: string, end: string | null): string {
 function StatusBadgeLog({ status }: { status: RoutineLog["status"] }) {
   const config: Record<RoutineLog["status"], { label: string; classes: string }> = {
     running: {
-      label: "Em execucao",
+      label: "Em execução",
       classes: "bg-[var(--color-warning)]/10 text-[var(--color-warning)] animate-pulse-soft",
     },
     completed: {
@@ -56,7 +56,7 @@ function StatusBadgeLog({ status }: { status: RoutineLog["status"] }) {
 function TriggerBadge({ triggeredBy }: { triggeredBy: RoutineLog["triggered_by"] }) {
   const config: Record<RoutineLog["triggered_by"], { label: string; classes: string }> = {
     cron: {
-      label: "Automatica",
+      label: "Automática",
       classes: "bg-[var(--color-muted)]/10 text-[var(--color-muted)]",
     },
     manual: {
@@ -136,7 +136,7 @@ export default function RoutinesPage() {
             Rotinas de follow-up
           </h1>
           <p className="mt-1 text-sm text-muted">
-            Rotina automatica roda diariamente as 09:00
+            Rotina automática roda diariamente as 09:00
           </p>
         </div>
         <Button
@@ -161,7 +161,7 @@ export default function RoutinesPage() {
         </GlassCard>
       ) : logs.length === 0 ? (
         <EmptyState
-          title="Nenhuma execucao registrada"
+          title="Nenhuma execução registrada"
           description="A rotina roda automaticamente todo dia as 09:00 ou voce pode iniciar manualmente."
         />
       ) : (
@@ -177,8 +177,8 @@ export default function RoutinesPage() {
                       <th className="px-4 py-3 font-medium text-muted">Disparada por</th>
                       <th className="px-4 py-3 font-medium text-muted">Status</th>
                       <th className="px-4 py-3 font-medium text-muted">Propostas afetadas</th>
-                      <th className="px-4 py-3 font-medium text-muted">Inicio</th>
-                      <th className="px-4 py-3 font-medium text-muted">Duracao</th>
+                      <th className="px-4 py-3 font-medium text-muted">Início</th>
+                      <th className="px-4 py-3 font-medium text-muted">Duração</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -233,11 +233,11 @@ export default function RoutinesPage() {
                     <span className="font-mono">{log.proposals_affected}</span>
                   </div>
                   <div>
-                    <span className="text-muted">Inicio: </span>
+                    <span className="text-muted">Início: </span>
                     <span>{formatDateTime(log.started_at)}</span>
                   </div>
                   <div>
-                    <span className="text-muted">Duracao: </span>
+                    <span className="text-muted">Duração: </span>
                     <span className="font-mono">{formatDuration(log.started_at, log.finished_at)}</span>
                   </div>
                 </div>
@@ -251,7 +251,7 @@ export default function RoutinesPage() {
       <ConfirmDialog
         open={confirmOpen}
         title="Rodar rotina de follow-up"
-        message="Isso vai disparar a rotina de follow-up agora. Propostas com status 'Enviada' ha mais de 3 dias serao processadas. Continuar?"
+        message="Isso vai disparar a rotina de follow-up agora. Propostas com status 'Enviada' há mais de 3 dias serão processadas. Continuar?"
         confirmLabel="Rodar agora"
         cancelLabel="Cancelar"
         onConfirm={handleTrigger}

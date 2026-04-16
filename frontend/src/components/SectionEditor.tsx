@@ -11,10 +11,10 @@ interface SectionEditorProps {
 }
 
 const SECTION_LABELS: Record<string, string> = {
-  introduction: "Introducao",
+  introduction: "Introdução",
   scope: "Escopo do projeto",
   investment: "Investimento",
-  next_steps: "Proximos passos",
+  next_steps: "Próximos passos",
 };
 
 export function SectionEditor({ title, content, onSave }: SectionEditorProps) {

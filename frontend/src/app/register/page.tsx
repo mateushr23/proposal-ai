@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, type SyntheticEvent } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/components/Toast";
@@ -22,23 +22,23 @@ export default function RegisterPage() {
     if (!email.trim()) {
       newErrors.email = "Informe seu e-mail";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "E-mail invalido";
+      newErrors.email = "E-mail inválido";
     }
     if (!password) {
       newErrors.password = "Informe sua senha";
     } else if (password.length < 6) {
-      newErrors.password = "A senha precisa ter no minimo 6 caracteres";
+      newErrors.password = "A senha precisa ter no mínimo 6 caracteres";
     }
     if (!confirmPassword) {
       newErrors.confirmPassword = "Confirme a senha";
     } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = "As senhas nao coincidem";
+      newErrors.confirmPassword = "As senhas não coincidem";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!validate()) return;
 
@@ -49,7 +49,7 @@ export default function RegisterPage() {
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erro ao criar conta. Tente novamente.";
       if (message.includes("409") || message.toLowerCase().includes("duplicate") || message.toLowerCase().includes("existe")) {
-        showToast("Ja existe uma conta com esse e-mail", "error");
+        showToast("Já existe uma conta com esse e-mail", "error");
       } else {
         showToast(message, "error");
       }
@@ -77,7 +77,7 @@ export default function RegisterPage() {
             ProposalAI
           </p>
           <p className="mt-3 text-lg text-white/80">
-            Propostas comerciais com inteligencia artificial
+            Propostas comerciais com inteligência artificial
           </p>
         </div>
       </div>
@@ -146,7 +146,7 @@ export default function RegisterPage() {
                 href="/login"
                 className="text-sm text-accent hover:underline"
               >
-                Ja tem conta? Faca login
+                Já tem conta? Faça login
               </Link>
             </div>
           </GlassCard>

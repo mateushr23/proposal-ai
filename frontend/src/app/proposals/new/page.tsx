@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, type SyntheticEvent } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { GlassCard } from "@/components/GlassCard";
@@ -54,7 +54,7 @@ export default function NewProposalPage() {
       newErrors.segment = "Informe o segmento";
     }
     if (!form.service.trim()) {
-      newErrors.service = "Descreva o servico";
+      newErrors.service = "Descreva o serviço";
     }
     if (!form.estimated_value) {
       newErrors.estimated_value = "Informe o valor estimado";
@@ -76,7 +76,7 @@ export default function NewProposalPage() {
     return Object.keys(newErrors).length === 0;
   }
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!validate()) return;
 
@@ -128,7 +128,7 @@ export default function NewProposalPage() {
               <FormField
                 label="Segmento"
                 type="text"
-                placeholder="Ex: Tecnologia, Saude, Educacao"
+                placeholder="Ex: Tecnologia, Saúde, Educação"
                 value={form.segment}
                 onChange={(e) => updateField("segment", (e.target as HTMLInputElement).value)}
                 error={errors.segment}
@@ -138,8 +138,8 @@ export default function NewProposalPage() {
             {/* Service - full width textarea */}
             <FormField
               as="textarea"
-              label="Servico oferecido"
-              placeholder="Descreva o servico que sera oferecido ao cliente"
+              label="Serviço oferecido"
+              placeholder="Descreva o serviço que sera oferecido ao cliente"
               rows={3}
               value={form.service}
               onChange={(e) => updateField("service", (e.target as HTMLTextAreaElement).value)}

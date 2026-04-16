@@ -12,7 +12,7 @@ describe('SectionEditor', () => {
 
   it('renders the section title with translated label', () => {
     render(<SectionEditor {...defaultProps} />)
-    expect(screen.getByText('Introducao')).toBeInTheDocument()
+    expect(screen.getByText('Introdução')).toBeInTheDocument()
   })
 
   it('renders translated label for scope section', () => {
@@ -27,7 +27,7 @@ describe('SectionEditor', () => {
 
   it('renders translated label for next_steps section', () => {
     render(<SectionEditor {...defaultProps} title="next_steps" />)
-    expect(screen.getByText('Proximos passos')).toBeInTheDocument()
+    expect(screen.getByText('Próximos passos')).toBeInTheDocument()
   })
 
   it('falls back to raw title when no label mapping exists', () => {
@@ -107,6 +107,6 @@ describe('SectionEditor', () => {
     const { container } = render(<SectionEditor {...defaultProps} />)
     const card = container.querySelector('.glass-card')
     expect(card?.className).toContain('border-l-[3px]')
-    expect(card?.className).toContain('border-l-[var(--color-accent)]')
+    expect(card?.className).toContain('border-l-accent')
   })
 })

@@ -154,10 +154,10 @@ export default function ProposalDetailPage() {
 
       // Sections
       const sectionLabels: Record<string, string> = {
-        introduction: "Introducao",
+        introduction: "Introdução",
         scope: "Escopo do projeto",
         investment: "Investimento",
-        next_steps: "Proximos passos",
+        next_steps: "Próximos passos",
       };
 
       doc.setTextColor(28, 25, 23);
@@ -216,8 +216,8 @@ export default function ProposalDetailPage() {
     return (
       <AppShell>
         <EmptyState
-          title="Proposta nao encontrada"
-          description="A proposta que voce procura nao existe ou foi removida."
+          title="Proposta não encontrada"
+          description="A proposta que voce procura não existe ou foi removida."
         />
       </AppShell>
     );
@@ -262,8 +262,8 @@ export default function ProposalDetailPage() {
       {!hasContent && !editedContent ? (
         <GlassCard className="flex flex-col items-center py-16">
           <EmptyState
-            title="Proposta ainda sem conteudo"
-            description="Clique no botao abaixo para gerar as secoes da proposta com inteligencia artificial."
+            title="Proposta ainda sem conteúdo"
+            description="Clique no botão abaixo para gerar as seções da proposta com inteligência artificial."
             action={
               <Button
                 variant="primary"
@@ -320,7 +320,7 @@ export default function ProposalDetailPage() {
               loading={saving}
               onClick={handleSave}
             >
-              {saving ? "Salvando..." : "Salvar alteracoes"}
+              {saving ? "Salvando..." : "Salvar alterações"}
             </Button>
           </div>
         </div>

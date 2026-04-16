@@ -102,7 +102,7 @@ export default function ProposalsPage() {
         activeFilter === "all" && proposals.length === 0 ? (
           <EmptyState
             title="Nenhuma proposta ainda"
-            description="Crie sua primeira proposta e deixe a IA montar o texto pra voce."
+            description="Crie sua primeira proposta e deixe a IA montar o texto pra você."
             action={
               <Link href="/proposals/new">
                 <Button variant="primary" size="md">
@@ -114,7 +114,7 @@ export default function ProposalsPage() {
         ) : (
           <EmptyState
             title="Nenhuma proposta encontrada"
-            description="Nao ha propostas com esse filtro."
+            description="Não há propostas com esse filtro."
           />
         )
       ) : (

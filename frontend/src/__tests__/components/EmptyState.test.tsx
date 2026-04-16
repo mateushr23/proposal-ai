@@ -58,7 +58,7 @@ describe('EmptyState', () => {
       <EmptyState title="Title" description="Muted text" />
     )
     const desc = screen.getByText('Muted text')
-    expect(desc.className).toContain('text-[var(--color-muted)]')
+    expect(desc.className).toContain('text-muted')
   })
 
   it('constrains description width to max-w-[40ch]', () => {

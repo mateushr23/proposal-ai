@@ -28,7 +28,7 @@ describe('StatusBadge', () => {
     render(<StatusBadge status="draft" />)
     const badge = screen.getByText('Rascunho')
     expect(badge.className).toContain('inline-flex')
-    expect(badge.className).toContain('rounded-[var(--radius-badge)]')
+    expect(badge.className).toContain('rounded-(--radius-badge)')
     expect(badge.className).toContain('uppercase')
     expect(badge.className).toContain('tracking-wide')
   })
