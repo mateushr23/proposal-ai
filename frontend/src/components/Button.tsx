@@ -46,7 +46,7 @@ export function Button({
     <button
       className={`
         inline-flex items-center justify-center font-medium
-        rounded-[var(--radius-button)]
+        rounded-(--radius-button)
         transition-all duration-150
         active:scale-[0.98] active:translate-y-px
         disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 disabled:active:translate-y-0

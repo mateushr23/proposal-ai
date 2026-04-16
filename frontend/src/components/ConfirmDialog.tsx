@@ -65,10 +65,10 @@ export function ConfirmDialog({
           className="glass-card w-full max-w-[420px] p-6 animate-fade-in-up"
           onClick={(e) => e.stopPropagation()}
         >
-          <h2 className="text-lg font-semibold text-[var(--color-foreground)]">
+          <h2 className="text-lg font-semibold text-foreground">
             {title}
           </h2>
-          <p className="mt-2 text-sm text-[var(--color-muted)]">{message}</p>
+          <p className="mt-2 text-sm text-muted">{message}</p>
           <div className="mt-6 flex justify-end gap-3">
             <Button variant="secondary" size="md" onClick={onCancel}>
               {cancelLabel}

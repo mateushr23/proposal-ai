@@ -44,25 +44,25 @@ export function ProposalCard({ proposal, style }: ProposalCardProps) {
         onClick={() => router.push(`/proposals/${proposal.id}`)}
       >
         <div className="flex items-start justify-between gap-3">
-          <h3 className="font-semibold text-[var(--color-foreground)] truncate">
+          <h3 className="font-semibold text-foreground truncate">
             {proposal.client_name}
           </h3>
           <StatusBadge status={proposal.status} />
         </div>
-        <p className="mt-1 text-sm text-[var(--color-muted)] truncate">
+        <p className="mt-1 text-sm text-muted truncate">
           {proposal.segment} &middot; {proposal.service}
         </p>
         <div className="mt-3 flex items-center justify-between text-sm">
-          <span className="font-mono text-[var(--color-foreground)]">
+          <span className="font-mono text-foreground">
             {formatCurrency(proposal.estimated_value)}
           </span>
-          <span className="text-[var(--color-muted)]">
+          <span className="text-muted">
             {formatDate(proposal.deadline)}
           </span>
         </div>
         {showFollowUp && (
-          <div className="mt-3 flex items-center gap-1.5 text-xs text-[var(--color-warning)]">
-            <span className="inline-block h-2 w-2 rounded-full bg-[var(--color-warning)]" />
+          <div className="mt-3 flex items-center gap-1.5 text-xs text-warning">
+            <span className="inline-block h-2 w-2 rounded-full bg-warning" />
             Follow-up pendente
           </div>
         )}

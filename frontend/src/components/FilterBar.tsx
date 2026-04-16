@@ -21,12 +21,12 @@ export function FilterBar({ filters, activeFilter, onChange }: FilterBarProps) {
             key={filter.value}
             onClick={() => onChange(filter.value)}
             className={`
-              shrink-0 rounded-[var(--radius-badge)] px-3 py-1.5 text-sm font-medium
+              shrink-0 rounded-(--radius-badge) px-3 py-1.5 text-sm font-medium
               transition-all duration-200
               ${
                 isActive
-                  ? "bg-[var(--color-accent-light)] text-[var(--color-accent)]"
-                  : "bg-transparent text-[var(--color-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-foreground)]"
+                  ? "bg-accent-light text-accent"
+                  : "bg-transparent text-muted hover:bg-surface hover:text-foreground"
               }
             `}
           >

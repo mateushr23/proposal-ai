@@ -103,10 +103,10 @@ export default function NewProposalPage() {
     <AppShell>
       {/* Page header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight text-[var(--color-foreground)]">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Nova proposta
         </h1>
-        <p className="mt-1 text-sm text-[var(--color-muted)]">
+        <p className="mt-1 text-sm text-muted">
           Preencha os dados do cliente para gerar uma proposta
         </p>
       </div>

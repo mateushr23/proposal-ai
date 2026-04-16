@@ -22,13 +22,13 @@ function SkeletonCard() {
   return (
     <div className="skeleton h-[140px] p-6">
       <div className="flex justify-between mb-3">
-        <div className="h-5 w-32 rounded bg-[var(--color-surface-hover)]" />
-        <div className="h-5 w-20 rounded bg-[var(--color-surface-hover)]" />
+        <div className="h-5 w-32 rounded bg-surface-hover" />
+        <div className="h-5 w-20 rounded bg-surface-hover" />
       </div>
-      <div className="h-4 w-48 rounded bg-[var(--color-surface-hover)] mb-3" />
+      <div className="h-4 w-48 rounded bg-surface-hover mb-3" />
       <div className="flex justify-between">
-        <div className="h-4 w-24 rounded bg-[var(--color-surface-hover)]" />
-        <div className="h-4 w-20 rounded bg-[var(--color-surface-hover)]" />
+        <div className="h-4 w-24 rounded bg-surface-hover" />
+        <div className="h-4 w-20 rounded bg-surface-hover" />
       </div>
     </div>
   );
@@ -64,7 +64,7 @@ export default function ProposalsPage() {
     <AppShell>
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight text-[var(--color-foreground)]">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Propostas
         </h1>
         <Link href="/proposals/new">

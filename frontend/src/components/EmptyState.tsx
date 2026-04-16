@@ -11,7 +11,7 @@ export function EmptyState({ title, description, action }: EmptyStateProps) {
     <div className="flex flex-col items-center justify-center py-16 animate-fade-in-up">
       <svg
         aria-hidden="true"
-        className="mb-4 text-[var(--color-muted)]"
+        className="mb-4 text-muted"
         width="48"
         height="48"
         viewBox="0 0 48 48"
@@ -26,10 +26,10 @@ export function EmptyState({ title, description, action }: EmptyStateProps) {
         <path d="M16 26h16" />
         <path d="M16 32h10" />
       </svg>
-      <h3 className="text-lg font-medium text-[var(--color-foreground)]">
+      <h3 className="text-lg font-medium text-foreground">
         {title}
       </h3>
-      <p className="mt-1 max-w-[40ch] text-center text-sm text-[var(--color-muted)]">
+      <p className="mt-1 max-w-[40ch] text-center text-sm text-muted">
         {description}
       </p>
       {action && <div className="mt-4">{action}</div>}

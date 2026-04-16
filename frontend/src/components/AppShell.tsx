@@ -12,7 +12,7 @@ interface AppShellProps {
 export function AppShell({ children }: AppShellProps) {
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-[var(--color-background)]">
+      <div className="min-h-screen bg-background">
         <Sidebar />
         <TopBar />
         <main className="lg:ml-60 pt-14 lg:pt-0">

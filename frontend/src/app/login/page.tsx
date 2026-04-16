@@ -52,7 +52,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen">
       {/* Brand panel - desktop only */}
-      <div className="hidden lg:flex lg:w-[55%] items-center justify-center bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-[55%] items-center justify-center bg-linear-to-br from-[#2563EB] to-[#1D4ED8] relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <svg aria-hidden="true" width="100%" height="100%">
             <defs>
@@ -74,16 +74,16 @@ export default function LoginPage() {
       </div>
 
       {/* Form panel */}
-      <div className="flex w-full lg:w-[45%] items-center justify-center px-4 py-12 bg-[var(--color-background)]">
+      <div className="flex w-full lg:w-[45%] items-center justify-center px-4 py-12 bg-background">
         <div className="w-full max-w-[400px]">
           <div className="mb-8 lg:hidden text-center">
-            <p className="text-2xl font-semibold text-[var(--color-foreground)] tracking-tight">
+            <p className="text-2xl font-semibold text-foreground tracking-tight">
               ProposalAI
             </p>
           </div>
 
           <GlassCard>
-            <h1 className="text-xl font-semibold text-[var(--color-foreground)] mb-6">
+            <h1 className="text-xl font-semibold text-foreground mb-6">
               Acesse sua conta
             </h1>
 
@@ -121,10 +121,10 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <div className="mt-6 pt-4 border-t border-[var(--color-border)] text-center">
+            <div className="mt-6 pt-4 border-t border-border text-center">
               <Link
                 href="/register"
-                className="text-sm text-[var(--color-accent)] hover:underline"
+                className="text-sm text-accent hover:underline"
               >
                 Ainda nao tem conta? Cadastre-se
               </Link>

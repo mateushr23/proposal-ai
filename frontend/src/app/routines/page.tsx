@@ -47,7 +47,7 @@ function StatusBadgeLog({ status }: { status: RoutineLog["status"] }) {
   };
   const c = config[status];
   return (
-    <span className={`inline-flex items-center rounded-[var(--radius-badge)] px-2 py-0.5 text-xs font-medium ${c.classes}`}>
+    <span className={`inline-flex items-center rounded-(--radius-badge) px-2 py-0.5 text-xs font-medium ${c.classes}`}>
       {c.label}
     </span>
   );
@@ -66,7 +66,7 @@ function TriggerBadge({ triggeredBy }: { triggeredBy: RoutineLog["triggered_by"]
   };
   const c = config[triggeredBy];
   return (
-    <span className={`inline-flex items-center rounded-[var(--radius-badge)] px-2 py-0.5 text-xs font-medium ${c.classes}`}>
+    <span className={`inline-flex items-center rounded-(--radius-badge) px-2 py-0.5 text-xs font-medium ${c.classes}`}>
       {c.label}
     </span>
   );
@@ -74,15 +74,15 @@ function TriggerBadge({ triggeredBy }: { triggeredBy: RoutineLog["triggered_by"]
 
 function SkeletonRows() {
   return (
-    <div className="space-y-0 divide-y divide-[var(--color-border)]">
+    <div className="space-y-0 divide-y divide-border">
       {Array.from({ length: 3 }).map((_, i) => (
         <div key={i} className="flex items-center gap-4 py-4 px-4">
-          <div className="h-4 w-32 rounded bg-[var(--color-surface-hover)]" />
-          <div className="h-4 w-20 rounded bg-[var(--color-surface-hover)]" />
-          <div className="h-4 w-20 rounded bg-[var(--color-surface-hover)]" />
-          <div className="h-4 w-12 rounded bg-[var(--color-surface-hover)]" />
-          <div className="h-4 w-28 rounded bg-[var(--color-surface-hover)]" />
-          <div className="h-4 w-16 rounded bg-[var(--color-surface-hover)]" />
+          <div className="h-4 w-32 rounded bg-surface-hover" />
+          <div className="h-4 w-20 rounded bg-surface-hover" />
+          <div className="h-4 w-20 rounded bg-surface-hover" />
+          <div className="h-4 w-12 rounded bg-surface-hover" />
+          <div className="h-4 w-28 rounded bg-surface-hover" />
+          <div className="h-4 w-16 rounded bg-surface-hover" />
         </div>
       ))}
     </div>
@@ -132,10 +132,10 @@ export default function RoutinesPage() {
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[var(--color-foreground)]">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             Rotinas de follow-up
           </h1>
-          <p className="mt-1 text-sm text-[var(--color-muted)]">
+          <p className="mt-1 text-sm text-muted">
             Rotina automatica roda diariamente as 09:00
           </p>
         </div>
@@ -172,22 +172,22 @@ export default function RoutinesPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-[var(--color-border)] text-left">
-                      <th className="px-4 py-3 font-medium text-[var(--color-muted)]">Rotina</th>
-                      <th className="px-4 py-3 font-medium text-[var(--color-muted)]">Disparada por</th>
-                      <th className="px-4 py-3 font-medium text-[var(--color-muted)]">Status</th>
-                      <th className="px-4 py-3 font-medium text-[var(--color-muted)]">Propostas afetadas</th>
-                      <th className="px-4 py-3 font-medium text-[var(--color-muted)]">Inicio</th>
-                      <th className="px-4 py-3 font-medium text-[var(--color-muted)]">Duracao</th>
+                    <tr className="border-b border-border text-left">
+                      <th className="px-4 py-3 font-medium text-muted">Rotina</th>
+                      <th className="px-4 py-3 font-medium text-muted">Disparada por</th>
+                      <th className="px-4 py-3 font-medium text-muted">Status</th>
+                      <th className="px-4 py-3 font-medium text-muted">Propostas afetadas</th>
+                      <th className="px-4 py-3 font-medium text-muted">Inicio</th>
+                      <th className="px-4 py-3 font-medium text-muted">Duracao</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[var(--color-border)]">
+                  <tbody className="divide-y divide-border">
                     {logs.map((log) => (
                       <tr
                         key={log.id}
-                        className="hover:bg-[var(--color-surface-hover)] transition-colors"
+                        className="hover:bg-surface-hover transition-colors"
                       >
-                        <td className="px-4 py-3 font-medium text-[var(--color-foreground)]">
+                        <td className="px-4 py-3 font-medium text-foreground">
                           {log.routine_name}
                         </td>
                         <td className="px-4 py-3">
@@ -196,13 +196,13 @@ export default function RoutinesPage() {
                         <td className="px-4 py-3">
                           <StatusBadgeLog status={log.status} />
                         </td>
-                        <td className="px-4 py-3 font-mono text-[var(--color-foreground)]">
+                        <td className="px-4 py-3 font-mono text-foreground">
                           {log.proposals_affected}
                         </td>
-                        <td className="px-4 py-3 text-[var(--color-muted)]">
+                        <td className="px-4 py-3 text-muted">
                           {formatDateTime(log.started_at)}
                         </td>
-                        <td className="px-4 py-3 font-mono text-[var(--color-muted)]">
+                        <td className="px-4 py-3 font-mono text-muted">
                           {formatDuration(log.started_at, log.finished_at)}
                         </td>
                       </tr>
@@ -218,26 +218,26 @@ export default function RoutinesPage() {
             {logs.map((log) => (
               <GlassCard key={log.id} padding="p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium text-sm text-[var(--color-foreground)]">
+                  <span className="font-medium text-sm text-foreground">
                     {log.routine_name}
                   </span>
                   <StatusBadgeLog status={log.status} />
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <span className="text-[var(--color-muted)]">Disparada por: </span>
+                    <span className="text-muted">Disparada por: </span>
                     <TriggerBadge triggeredBy={log.triggered_by} />
                   </div>
                   <div>
-                    <span className="text-[var(--color-muted)]">Afetadas: </span>
+                    <span className="text-muted">Afetadas: </span>
                     <span className="font-mono">{log.proposals_affected}</span>
                   </div>
                   <div>
-                    <span className="text-[var(--color-muted)]">Inicio: </span>
+                    <span className="text-muted">Inicio: </span>
                     <span>{formatDateTime(log.started_at)}</span>
                   </div>
                   <div>
-                    <span className="text-[var(--color-muted)]">Duracao: </span>
+                    <span className="text-muted">Duracao: </span>
                     <span className="font-mono">{formatDuration(log.started_at, log.finished_at)}</span>
                   </div>
                 </div>

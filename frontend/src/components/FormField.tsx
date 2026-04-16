@@ -60,7 +60,7 @@ export function FormField(props: FormFieldProps) {
     <div className="flex flex-col gap-1">
       <label
         htmlFor={generatedId}
-        className="text-sm font-medium text-[var(--color-foreground)]"
+        className="text-sm font-medium text-foreground"
       >
         {label}
       </label>
@@ -82,12 +82,12 @@ export function FormField(props: FormFieldProps) {
         />
       )}
       {error && (
-        <p id={errorId} className="text-xs text-[var(--color-error)]" role="alert">
+        <p id={errorId} className="text-xs text-error" role="alert">
           {error}
         </p>
       )}
       {helper && !error && (
-        <p id={helperId} className="text-xs text-[var(--color-muted)]">
+        <p id={helperId} className="text-xs text-muted">
           {helper}
         </p>
       )}

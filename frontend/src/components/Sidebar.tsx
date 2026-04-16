@@ -57,7 +57,7 @@ export function Sidebar() {
   return (
     <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-full w-60 glass z-40">
       <div className="p-6">
-        <span className="text-xl font-semibold tracking-tight text-[var(--color-foreground)]">
+        <span className="text-xl font-semibold tracking-tight text-foreground">
           ProposalAI
         </span>
       </div>
@@ -71,12 +71,12 @@ export function Sidebar() {
                 <Link
                   href={item.href}
                   className={`
-                    flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-button)] text-sm font-medium
+                    flex items-center gap-3 px-3 py-2.5 rounded-(--radius-button) text-sm font-medium
                     transition-all duration-200
                     ${
                       active
-                        ? "bg-[var(--color-accent-light)] text-[var(--color-accent)]"
-                        : "text-[var(--color-muted)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-foreground)]"
+                        ? "bg-accent-light text-accent"
+                        : "text-muted hover:bg-surface-hover hover:text-foreground"
                     }
                   `}
                 >
@@ -89,19 +89,19 @@ export function Sidebar() {
         </ul>
       </nav>
 
-      <div className="p-4 border-t border-[var(--color-border)]">
+      <div className="p-4 border-t border-border">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-[var(--color-accent-light)] flex items-center justify-center text-sm font-medium text-[var(--color-accent)]">
+          <div className="h-8 w-8 rounded-full bg-accent-light flex items-center justify-center text-sm font-medium text-accent">
             {user?.email?.charAt(0).toUpperCase() ?? "U"}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-[var(--color-muted)] truncate">
+            <p className="text-xs text-muted truncate">
               {user?.email ?? ""}
             </p>
           </div>
           <button
             onClick={logout}
-            className="shrink-0 text-[var(--color-muted)] hover:text-[var(--color-foreground)] transition-colors"
+            className="shrink-0 text-muted hover:text-foreground transition-colors"
             aria-label="Sair"
             title="Sair"
           >

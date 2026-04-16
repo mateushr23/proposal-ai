@@ -113,12 +113,12 @@ function ToastItem({
       <span className={`shrink-0 ${colorByType[toast.type]}`}>
         {iconByType[toast.type]}
       </span>
-      <p className="flex-1 text-sm text-[var(--color-foreground)]">
+      <p className="flex-1 text-sm text-foreground">
         {toast.message}
       </p>
       <button
         onClick={onDismiss}
-        className="shrink-0 text-[var(--color-muted)] hover:text-[var(--color-foreground)] transition-colors"
+        className="shrink-0 text-muted hover:text-foreground transition-colors"
         aria-label="Fechar"
       >
         <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

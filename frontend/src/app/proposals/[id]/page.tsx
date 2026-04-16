@@ -230,10 +230,10 @@ export default function ProposalDetailPage() {
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[var(--color-foreground)]">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             {proposal.client_name}
           </h1>
-          <p className="mt-1 text-sm text-[var(--color-muted)]">
+          <p className="mt-1 text-sm text-muted">
             {proposal.segment} &middot; {proposal.service}
           </p>
         </div>

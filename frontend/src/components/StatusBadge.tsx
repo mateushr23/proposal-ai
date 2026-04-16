@@ -30,7 +30,7 @@ export function StatusBadge({ status }: StatusBadgeProps) {
   const config = statusConfig[status];
   return (
     <span
-      className={`inline-flex items-center rounded-[var(--radius-badge)] px-2.5 py-1 text-xs font-medium uppercase tracking-wide ${config.classes}`}
+      className={`inline-flex items-center rounded-(--radius-badge) px-2.5 py-1 text-xs font-medium uppercase tracking-wide ${config.classes}`}
     >
       {config.label}
     </span>
