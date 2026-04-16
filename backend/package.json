@@ -7,7 +7,7 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "migrate": "node src/db/migrate.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --forceExit --detectOpenHandles"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +24,8 @@
     "pg": "^8.20.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "jest": "latest",
+    "nodemon": "^3.1.14",
+    "supertest": "latest"
   }
 }
