@@ -10,7 +10,8 @@ import { EmptyState } from "@/components/EmptyState";
 import { Button } from "@/components/Button";
 import { useToast } from "@/components/Toast";
 import { api } from "@/lib/api";
-import type { Proposal, ProposalContent } from "@/types";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import type { Proposal, ProposalContent, ProposalStatus } from "@/types";
 
 const SECTION_ORDER: (keyof ProposalContent)[] = [
   "introduction",
@@ -56,6 +57,8 @@ export default function ProposalDetailPage() {
   const [saving, setSaving] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [editedContent, setEditedContent] = useState<ProposalContent | null>(null);
+  const [statusConfirm, setStatusConfirm] = useState<ProposalStatus | null>(null);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
 
   const fetchProposal = useCallback(async () => {
     setLoading(true);
@@ -204,6 +207,50 @@ export default function ProposalDetailPage() {
     }
   }
 
+  async function handleStatusChange() {
+    if (!statusConfirm) return;
+    setUpdatingStatus(true);
+    try {
+      await api.patch<Proposal>(`/api/proposals/${id}/status`, {
+        status: statusConfirm,
+      });
+      setProposal((prev) =>
+        prev ? { ...prev, status: statusConfirm } : prev
+      );
+      showToast("Status atualizado com sucesso", "success");
+    } catch {
+      showToast("Erro ao atualizar status. Tente novamente.", "error");
+    } finally {
+      setUpdatingStatus(false);
+      setStatusConfirm(null);
+    }
+  }
+
+  const statusDialogConfig: Record<
+    string,
+    { title: string; message: string; confirmLabel: string; variant: "primary" | "error" }
+  > = {
+    sent: {
+      title: "Enviar proposta?",
+      message:
+        "Ao marcar como enviada, a proposta entrará no acompanhamento de follow-up automático.",
+      confirmLabel: "Marcar como enviada",
+      variant: "primary",
+    },
+    accepted: {
+      title: "Aceitar proposta?",
+      message: "Essa ação marca a proposta como aceita pelo cliente.",
+      confirmLabel: "Marcar como aceita",
+      variant: "primary",
+    },
+    rejected: {
+      title: "Recusar proposta?",
+      message: "Essa ação marca a proposta como recusada pelo cliente.",
+      confirmLabel: "Marcar como recusada",
+      variant: "error",
+    },
+  };
+
   if (loading) {
     return (
       <AppShell>
@@ -255,6 +302,33 @@ export default function ProposalDetailPage() {
             {exporting ? "Exportando..." : "Exportar PDF"}
           </Button>
           <StatusBadge status={proposal.status} />
+          {proposal.status === "draft" && hasContent && (
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => setStatusConfirm("sent")}
+            >
+              Marcar como enviada
+            </Button>
+          )}
+          {proposal.status === "sent" && (
+            <>
+              <Button
+                variant="primary"
+                size="md"
+                onClick={() => setStatusConfirm("accepted")}
+              >
+                Marcar como aceita
+              </Button>
+              <Button
+                variant="error"
+                size="md"
+                onClick={() => setStatusConfirm("rejected")}
+              >
+                Marcar como recusada
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
@@ -324,6 +398,18 @@ export default function ProposalDetailPage() {
             </Button>
           </div>
         </div>
+      )}
+      {statusConfirm && statusDialogConfig[statusConfirm] && (
+        <ConfirmDialog
+          open={!!statusConfirm}
+          title={statusDialogConfig[statusConfirm].title}
+          message={statusDialogConfig[statusConfirm].message}
+          confirmLabel={statusDialogConfig[statusConfirm].confirmLabel}
+          cancelLabel="Cancelar"
+          variant={statusDialogConfig[statusConfirm].variant}
+          onConfirm={handleStatusChange}
+          onCancel={() => setStatusConfirm(null)}
+        />
       )}
     </AppShell>
   );
