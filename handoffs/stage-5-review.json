@@ -1,0 +1,107 @@
+{
+  "stage": "review",
+  "status": "approved_with_warnings",
+  "critical": 0,
+  "warnings": 5,
+  "suggestions": 8,
+  "issues": [
+    {
+      "severity": "warning",
+      "file": "backend/src/middleware/auth.js",
+      "line": 13,
+      "issue": "jwt.verify() does not specify an explicit algorithms array. This leaves the door open to algorithm confusion attacks where an attacker could craft a token with alg:none or switch from RS256 to HS256 if the secret is ever changed to an asymmetric key.",
+      "fix": "Change line 13 to: const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });"
+    },
+    {
+      "severity": "warning",
+      "file": "backend/src/routes/routines.js",
+      "line": 13,
+      "issue": "GET /api/routines/logs has no user-scoping filter (WHERE user_id = $1). Any authenticated user can view ALL routine logs for ALL users, including other users' email addresses leaked via the details JSONB column (which stores user_email in follow-up results).",
+      "fix": "Either add a WHERE clause to scope logs to the requesting user (requires adding user_id to routine_logs), or restrict this endpoint to admin-only access."
+    },
+    {
+      "severity": "warning",
+      "file": "backend/src/routes/routines.js",
+      "line": 26,
+      "issue": "POST /api/routines/follow-up/trigger has no authorization gate. Any authenticated user can trigger the follow-up routine, which processes ALL users' stale proposals. This is an admin-level action exposed to every user.",
+      "fix": "Add an admin role check, or scope the routine to only process the requesting user's proposals."
+    },
+    {
+      "severity": "warning",
+      "file": "backend/src/routes/routines.js",
+      "line": 35,
+      "issue": "Fire-and-forget pattern with .catch(() => {}) silently swallows errors from runFollowUpRoutineManual. While the function writes to the DB on failure, any DB write error in the catch handler itself is lost.",
+      "fix": "Change .catch(() => {}) to .catch((err) => process.stderr.write(`[manual-routine] Unhandled error: ${err.message}\\n`));"
+    },
+    {
+      "severity": "warning",
+      "file": "backend/src/config/db.js",
+      "line": 8,
+      "issue": "Pool error handler calls process.exit(1) without logging the error message. Silent crash makes debugging impossible in production.",
+      "fix": "Add logging before exit: pool.on('error', (err) => { process.stderr.write(`Unexpected pool error: ${err.message}\\n`); process.exit(1); });"
+    },
+    {
+      "severity": "suggestion",
+      "file": "backend/src/routes/proposals.js",
+      "line": 27,
+      "issue": "GET /api/proposals/:id fetches user_id only to check ownership. Two queries can be consolidated into one by adding AND user_id = $2 to the WHERE clause, which also eliminates the IDOR window between the SELECT and the ownership check.",
+      "fix": "Change to: SELECT ... FROM proposals WHERE id = $1 AND user_id = $2 with [req.params.id, req.user.id]. Apply same pattern to PUT/:id, PATCH/:id/status, DELETE/:id, POST/:id/generate."
+    },
+    {
+      "severity": "suggestion",
+      "file": "backend/src/services/followUp.js",
+      "line": 1,
+      "issue": "Duplicate code: runFollowUpRoutineManual in routes/routines.js is nearly identical to runFollowUpRoutine in services/followUp.js. The manual route duplicates the entire stale-proposal query and follow-up loop instead of calling the existing service.",
+      "fix": "Delete runFollowUpRoutineManual and use the existing runFollowUpRoutine('manual') from services/followUp.js in the route handler."
+    },
+    {
+      "severity": "suggestion",
+      "file": "backend/src/routes/auth.js",
+      "line": 19,
+      "issue": "No email format validation on the server side. Frontend validates email format, but the backend accepts any non-empty string as an email.",
+      "fix": "Add a regex or validator library check for email format before the database query, e.g.: if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return res.status(400).json({ error: 'Invalid email format' });"
+    },
+    {
+      "severity": "suggestion",
+      "file": "frontend/src/lib/api.ts",
+      "line": 52,
+      "issue": "Error response parsing reads errorData.message but the backend sends { error: '...' }, not { message: '...' }. This means error messages from the backend are never shown to the user; they always get 'Erro na requisicao'.",
+      "fix": "Change line 53 to: const error = new Error(errorData.error ?? errorData.message ?? 'Erro na requisicao');"
+    },
+    {
+      "severity": "suggestion",
+      "file": "frontend/src/app/proposals/[id]/page.tsx",
+      "line": 73,
+      "issue": "showToast is in the dependency array of fetchProposal useCallback, but showToast's identity is stable (from useMemo in the provider). While not a bug currently, if the Toast provider ever changes, this could cause infinite re-fetch loops since fetchProposal is in useEffect deps.",
+      "fix": "Either remove showToast from the useCallback dependency array (with an eslint-disable comment explaining why), or move error handling out of fetchProposal."
+    },
+    {
+      "severity": "suggestion",
+      "file": "frontend/src/app/proposals/page.tsx",
+      "line": 47,
+      "issue": "Empty catch block silently swallows non-401 errors (e.g., 500 from backend). The user sees the loading spinner stop but no indication of what went wrong.",
+      "fix": "Add a showToast call in the catch block: catch { showToast('Erro ao carregar propostas', 'error'); }"
+    },
+    {
+      "severity": "suggestion",
+      "file": "frontend/src/components/SectionEditor.tsx",
+      "line": 93,
+      "issue": "Content is rendered via {content} inside a div with whitespace-pre-wrap. If the AI-generated content ever contains HTML tags, they will be rendered as text (safe), but this is worth noting. No XSS risk here since React escapes by default.",
+      "fix": "No action needed; this is informational. The current approach is safe."
+    },
+    {
+      "severity": "suggestion",
+      "file": "frontend/src/app/login/page.tsx",
+      "line": 96,
+      "issue": "onChange handler casts e.target as HTMLInputElement unnecessarily. FormField already types the event correctly based on the 'as' prop, but the cast works around a type mismatch in the component's event typing.",
+      "fix": "Consider updating FormField to use separate onChange types for input vs textarea, or accept the cast as a practical workaround."
+    }
+  ],
+  "summary": {
+    "security": "All SQL queries are properly parameterized (no injection risk). No hardcoded secrets found. Auth middleware protects proposal routes correctly with ownership checks (IDOR prevention). JWT algorithm should be pinned. Routine endpoints lack proper authorization scoping — any authenticated user can view all logs and trigger the routine for all users.",
+    "code_quality": "Clean separation of concerns. asyncHandler utility properly wraps all async routes. TypeScript types are well-defined with no 'any' usage. Error handling is mostly solid with one gap (api.ts reading wrong error field). Duplicate code in routines.js should be consolidated.",
+    "architecture": "Backend follows a clean Express pattern with proper middleware chain. Frontend uses a well-structured component hierarchy with proper client/server component boundaries. Auth context uses memoization correctly. React patterns are solid throughout — useCallback, useMemo, and proper dependency arrays.",
+    "react_patterns": "Good use of useCallback for stable references. Proper key props on lists. No unnecessary re-renders detected. GlassCard handles keyboard accessibility for clickable cards. FormField has proper aria attributes. Toast system uses context correctly with stable references."
+  },
+  "review_cycles": 1
+}
