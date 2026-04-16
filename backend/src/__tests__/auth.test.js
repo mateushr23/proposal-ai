@@ -69,7 +69,7 @@ describe('POST /api/auth/register', () => {
       .send({ email: 'existing@example.com', password: 'password123' });
 
     expect(res.status).toBe(409);
-    expect(res.body.error).toMatch(/already registered/i);
+    expect(res.body.error).toMatch(/já está cadastrado/i);
   });
 
   it('returns 400 when email is missing', async () => {
@@ -78,7 +78,7 @@ describe('POST /api/auth/register', () => {
       .send({ password: 'password123' });
 
     expect(res.status).toBe(400);
-    expect(res.body.error).toMatch(/required/i);
+    expect(res.body.error).toMatch(/obrigatórios/i);
   });
 
   it('returns 400 when password is missing', async () => {
@@ -87,7 +87,7 @@ describe('POST /api/auth/register', () => {
       .send({ email: 'test@example.com' });
 
     expect(res.status).toBe(400);
-    expect(res.body.error).toMatch(/required/i);
+    expect(res.body.error).toMatch(/obrigatórios/i);
   });
 
   it('returns 400 when password is too short', async () => {
@@ -96,7 +96,7 @@ describe('POST /api/auth/register', () => {
       .send({ email: 'test@example.com', password: '123' });
 
     expect(res.status).toBe(400);
-    expect(res.body.error).toMatch(/at least 6/i);
+    expect(res.body.error).toMatch(/no mínimo 6/i);
   });
 
   it('hashes the password with bcrypt before storing', async () => {
@@ -151,7 +151,7 @@ describe('POST /api/auth/login', () => {
       .send({ email: 'user@example.com', password: 'wrongpassword' });
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toMatch(/invalid credentials/i);
+    expect(res.body.error).toMatch(/incorretos/i);
   });
 
   it('returns 401 for non-existent email', async () => {
@@ -162,7 +162,7 @@ describe('POST /api/auth/login', () => {
       .send({ email: 'nobody@example.com', password: 'anything' });
 
     expect(res.status).toBe(401);
-    expect(res.body.error).toMatch(/invalid credentials/i);
+    expect(res.body.error).toMatch(/incorretos/i);
   });
 
   it('returns 400 when email and password are missing', async () => {
@@ -171,7 +171,7 @@ describe('POST /api/auth/login', () => {
       .send({});
 
     expect(res.status).toBe(400);
-    expect(res.body.error).toMatch(/required/i);
+    expect(res.body.error).toMatch(/obrigatórios/i);
   });
 });
 
