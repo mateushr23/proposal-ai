@@ -1,0 +1,46 @@
+{
+  "stage": "qa",
+  "status": "pending",
+  "suites": {
+    "backend_unit": {
+      "files": [
+        "backend/src/__tests__/auth.test.js",
+        "backend/src/__tests__/proposals.test.js",
+        "backend/src/__tests__/routines.test.js"
+      ],
+      "description": "Backend unit tests covering auth (register, login, JWT middleware), proposal CRUD (create, read, update, delete, status update, AI generation), and routine routes (logs listing, manual trigger). All tests mock the pg pool and Groq service — no real database or API required."
+    },
+    "frontend_unit": {
+      "files": [
+        "frontend/src/__tests__/components/Button.test.tsx",
+        "frontend/src/__tests__/components/StatusBadge.test.tsx",
+        "frontend/src/__tests__/components/FormField.test.tsx",
+        "frontend/src/__tests__/components/GlassCard.test.tsx",
+        "frontend/src/__tests__/components/SectionEditor.test.tsx",
+        "frontend/src/__tests__/components/EmptyState.test.tsx",
+        "frontend/src/__tests__/lib/api.test.ts"
+      ],
+      "description": "Frontend unit tests using Vitest + React Testing Library. Covers Button (variants, sizes, loading, disabled, click, icons), StatusBadge (labels and colors per status), FormField (label linking, error display, a11y attributes, textarea mode), GlassCard (children rendering, hover, click, keyboard a11y), SectionEditor (edit/save/cancel flow, label translation), EmptyState (title, description, action, icon), and ApiClient (token attachment, 401 redirect, HTTP methods, error handling)."
+    }
+  },
+  "artifacts": [
+    "backend/jest.config.js",
+    "backend/src/__tests__/auth.test.js",
+    "backend/src/__tests__/proposals.test.js",
+    "backend/src/__tests__/routines.test.js",
+    "frontend/vitest.config.ts",
+    "frontend/src/__tests__/setup.ts",
+    "frontend/src/__tests__/components/Button.test.tsx",
+    "frontend/src/__tests__/components/StatusBadge.test.tsx",
+    "frontend/src/__tests__/components/FormField.test.tsx",
+    "frontend/src/__tests__/components/GlassCard.test.tsx",
+    "frontend/src/__tests__/components/SectionEditor.test.tsx",
+    "frontend/src/__tests__/components/EmptyState.test.tsx",
+    "frontend/src/__tests__/lib/api.test.ts"
+  ],
+  "config_changes": [
+    "backend/package.json — added jest and supertest to devDependencies, updated test script",
+    "frontend/package.json — added vitest, @testing-library/react, @testing-library/jest-dom, @testing-library/user-event, @vitejs/plugin-react, jsdom to devDependencies, added test script"
+  ],
+  "report": "Comprehensive test suites created for both backend (3 files, ~30 test cases) and frontend (7 files, ~60 test cases). Backend tests mock pg pool and Groq service to run without external dependencies. Tests cover: auth register/login/JWT validation, proposal full CRUD with ownership checks, AI generation with mocked Groq, routine logs and manual trigger. Frontend tests cover: all 5 reusable UI components (Button, StatusBadge, FormField, GlassCard, EmptyState), the SectionEditor interactive component (edit/save/cancel flow), and the ApiClient (token handling, 401 redirect, all HTTP methods). Tests follow RTL query priority (getByRole, getByLabelText) and assert behavior over implementation. Status set to pending — orchestrator must run npm install + npm test in both directories to verify."
+}

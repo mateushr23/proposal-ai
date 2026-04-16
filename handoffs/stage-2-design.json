@@ -1,0 +1,208 @@
+{
+  "stage": "design",
+  "tokens": {
+    "colors": {
+      "background": "#F8F6F3",
+      "foreground": "#1C1917",
+      "accent": "#2563EB",
+      "accent_light": "#DBEAFE",
+      "surface": "rgba(255, 255, 255, 0.72)",
+      "surface_hover": "rgba(255, 255, 255, 0.88)",
+      "border": "rgba(28, 25, 23, 0.08)",
+      "success": "#059669",
+      "warning": "#D97706",
+      "error": "#DC2626",
+      "muted": "#78716C"
+    },
+    "fonts": {
+      "headline": "Outfit",
+      "body": "Outfit",
+      "mono": "JetBrains Mono"
+    },
+    "spacing": {
+      "section": "64px / 4rem",
+      "component": "24px / 1.5rem",
+      "element": "8px / 0.5rem"
+    },
+    "radii": {
+      "card": "20px",
+      "button": "12px",
+      "input": "12px",
+      "badge": "8px"
+    },
+    "shadows": {
+      "card": "0 1px 3px rgba(28, 25, 23, 0.04), 0 8px 24px rgba(28, 25, 23, 0.06)",
+      "elevated": "0 4px 12px rgba(28, 25, 23, 0.08), 0 20px 48px rgba(28, 25, 23, 0.10)",
+      "glass": "0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 8px 32px rgba(28, 25, 23, 0.06)"
+    }
+  },
+  "components": [
+    {
+      "name": "AppShell",
+      "props": ["children"],
+      "layout": "Full viewport wrapper. Warm linen background (#F8F6F3). Contains Sidebar on desktop (240px fixed left), TopBar on mobile. Main content area with max-w-[1120px] centered, px-6 on desktop, px-4 on mobile.",
+      "notes": "Background uses a subtle CSS radial gradient overlay (warm cream to slightly cooler cream) to avoid flat single-color feel. No noise texture on scrolling content."
+    },
+    {
+      "name": "Sidebar",
+      "props": ["activeRoute", "user"],
+      "layout": "Fixed left column, 240px wide, full height. Glass surface (backdrop-blur-xl, surface color). Logo at top, nav links stacked vertically with 8px gap, user avatar and email at bottom.",
+      "notes": "Glass panel with 1px right border (border token). Nav items have 12px radius hover state with surface_hover background. Active item uses accent_light background with accent text. Hidden below 1024px, replaced by TopBar hamburger menu. Spring transition on active indicator (stiffness: 200, damping: 25)."
+    },
+    {
+      "name": "TopBar",
+      "props": ["title", "actions"],
+      "layout": "Mobile-only sticky top bar. Full width, 56px height. Glass surface with backdrop-blur-lg. Hamburger left, page title center, action buttons right.",
+      "notes": "Only visible below 1024px. Uses glass token shadow. Hamburger opens a full-screen overlay nav with staggered fade-in (100ms delay per item)."
+    },
+    {
+      "name": "PageHeader",
+      "props": ["title", "subtitle", "action"],
+      "layout": "Left-aligned title (text-2xl font-semibold tracking-tight) with optional subtitle below (muted color, text-sm). Action button (like 'New Proposal') aligned right on desktop, full-width below on mobile.",
+      "notes": "Title uses foreground color. No centered text. Margin-bottom 32px to content."
+    },
+    {
+      "name": "GlassCard",
+      "props": ["children", "padding", "hoverable"],
+      "layout": "Container with glass surface background, border token, card radius (20px), card shadow. Default padding 24px.",
+      "notes": "Glass morphism: backdrop-blur-xl, semi-transparent white bg, 1px border with border-white/10 inner highlight, inset shadow for edge refraction. When hoverable=true, scale-[1.01] on hover with elevated shadow, spring transition (300ms, cubic-bezier(0.32, 0.72, 0, 1)). Never use for pure spacing -- only when elevation communicates hierarchy."
+    },
+    {
+      "name": "FormField",
+      "props": ["label", "type", "placeholder", "error", "helper"],
+      "layout": "Label above input (text-sm font-medium, 4px margin-bottom). Input full width, 44px height, 12px radius, 12px horizontal padding. Error text below in error color, helper text in muted.",
+      "notes": "Input background: white with 60% opacity (glass feel). Border: border token, transitions to accent on focus with a soft ring (ring-2 ring-accent/20). Labels never float -- always static above. Gap-2 between label-input-error stack."
+    },
+    {
+      "name": "Button",
+      "props": ["variant", "size", "loading", "icon"],
+      "layout": "Variants: primary (accent bg, white text), secondary (surface bg, foreground text), ghost (transparent, foreground text). Sizes: sm (32px h, text-sm), md (40px h, text-sm), lg (48px h, text-base). Icon optional left or right.",
+      "notes": "Button radius 12px. Primary has subtle shadow (0 1px 2px accent/20). Active state: scale-[0.98] translateY(1px) for tactile press feel. Loading state: content fades to 0 opacity, spinner appears in center. No large internal padding for spacing -- use margin on the button or siblings. Spring transition on press."
+    },
+    {
+      "name": "StatusBadge",
+      "props": ["status"],
+      "layout": "Inline pill shape with badge radius (8px). Padding px-2.5 py-1. Text-xs font-medium uppercase tracking-wide.",
+      "notes": "Status colors: draft = muted bg + muted text, sent = accent_light bg + accent text, accepted = success/10 bg + success text, rejected = error/10 bg + error text. No outer glow or neon effects."
+    },
+    {
+      "name": "ProposalCard",
+      "props": ["proposal", "onClick"],
+      "layout": "GlassCard with hoverable=true. Top row: client_name (font-semibold) + StatusBadge right-aligned. Second row: segment and service as muted text. Bottom row: estimated_value formatted as currency left, deadline date right. Follow-up indicator: small amber dot + 'Follow-up pending' text if applicable.",
+      "notes": "Follow-up indicator uses warning color. Entire card is clickable. On hover, slight upward lift with spring animation. Stagger children on list mount (80ms delay per card)."
+    },
+    {
+      "name": "ProposalForm",
+      "props": ["onSubmit", "loading"],
+      "layout": "Vertical stack of FormField components inside a GlassCard. Fields: client_name (text), segment (text), service (textarea, 3 rows), estimated_value (number with currency prefix), deadline (date picker). Submit button full-width at bottom, lg size, primary variant.",
+      "notes": "Two-column grid on desktop for client_name + segment row, and estimated_value + deadline row. Service field spans full width. 24px gap between field groups. Form validation shows inline errors below each field."
+    },
+    {
+      "name": "SectionEditor",
+      "props": ["title", "content", "onSave", "editing"],
+      "layout": "GlassCard per section. Section title (text-lg font-semibold) with edit icon button right-aligned. Content area: read-mode shows formatted text, edit-mode shows textarea (min 120px height, auto-grow). Save/Cancel buttons appear in edit mode at bottom-right.",
+      "notes": "Transition between read and edit mode uses layout animation (height interpolation with spring physics). Textarea has same glass input styling as FormField. Section order: introduction, scope, investment, next_steps. Each section has a subtle left accent border (3px, accent color) in read mode."
+    },
+    {
+      "name": "GenerateButton",
+      "props": ["onClick", "loading", "hasContent"],
+      "layout": "Large primary button with sparkle/wand icon. When loading, button text changes to 'Generating...' with a shimmer animation across the surface.",
+      "notes": "Shimmer uses a moving linear-gradient (accent_light to transparent) translating across the button surface during loading. Uses CSS animation, not JS-driven re-renders. When hasContent=true, button text changes to 'Regenerate' with a refresh icon."
+    },
+    {
+      "name": "ExportPDFButton",
+      "props": ["onClick", "loading"],
+      "layout": "Secondary button variant with download icon. Fixed position in the proposal detail page header actions area.",
+      "notes": "On click, brief scale-down press animation then a success checkmark replaces the icon for 2 seconds. Uses spring transition."
+    },
+    {
+      "name": "RoutineLogRow",
+      "props": ["log"],
+      "layout": "Table-like row inside a GlassCard list. Columns: routine_name, triggered_by (badge: cron=muted, manual=accent), status (badge: completed=success, failed=error, running=warning), proposals_affected count, started_at formatted date, duration (finished_at - started_at).",
+      "notes": "Rows use divide-y border pattern instead of individual cards to reduce visual noise (high-density data). Running status has a subtle pulse animation on the badge. Hover highlights row with surface_hover."
+    },
+    {
+      "name": "TriggerButton",
+      "props": ["onClick", "loading", "confirmRequired"],
+      "layout": "Primary button with play/bolt icon. When confirmRequired=true, first click transforms the button into a confirmation state: text changes to 'Confirm trigger?', color shifts to warning, second click executes.",
+      "notes": "Confirmation state auto-reverts after 3 seconds if not clicked. Transition between states uses spring layout animation. After trigger, shows success toast."
+    },
+    {
+      "name": "Toast",
+      "props": ["message", "type", "visible"],
+      "layout": "Fixed bottom-right (desktop) or bottom-center (mobile). GlassCard with tighter padding (12px 16px). Icon left (success/error/info), message text, close X right.",
+      "notes": "Enters from bottom with spring animation (translateY 100% to 0, opacity 0 to 1). Auto-dismisses after 4 seconds with fade-out. Stacks vertically if multiple toasts."
+    },
+    {
+      "name": "EmptyState",
+      "props": ["title", "description", "action"],
+      "layout": "Centered vertically in content area. Subtle illustration or icon (muted, 48px). Title below (text-lg font-medium), description (text-sm muted, max-w-[40ch]). Optional action button below.",
+      "notes": "No emoji illustrations. Use simple line icons from Phosphor (Light weight). Gentle fade-in on mount. Description text uses muted color."
+    },
+    {
+      "name": "SkeletonLoader",
+      "props": ["variant"],
+      "layout": "Variants: card (matches ProposalCard dimensions), form (matches ProposalForm layout), detail (matches SectionEditor layout), table (matches RoutineLogRow pattern). Uses rounded shapes matching component radii.",
+      "notes": "Shimmer animation: moving highlight gradient (surface to surface_hover to surface) translating left-to-right over 1.5s infinite loop. Must match exact layout dimensions of the component it replaces."
+    },
+    {
+      "name": "AuthLayout",
+      "props": ["children"],
+      "layout": "Full viewport, two-column split on desktop: left 55% has brand panel (accent gradient background, product name, tagline, subtle geometric pattern), right 45% has centered auth form. Mobile: full-width form only, brand panel hidden.",
+      "notes": "Brand panel gradient: from accent (#2563EB) to a slightly darker shade (#1D4ED8), angled 135deg. Geometric pattern uses thin white/10 lines forming a subtle grid. Auth form container is a GlassCard with max-w-[400px]."
+    },
+    {
+      "name": "FilterBar",
+      "props": ["filters", "activeFilter", "onChange"],
+      "layout": "Horizontal row of pill-shaped toggle buttons. Active filter has accent_light background with accent text. Inactive filters have transparent bg with muted text.",
+      "notes": "Uses badge radius (8px). Active indicator animates between pills using layoutId for shared element transition. Scrollable horizontally on mobile with no visible scrollbar."
+    },
+    {
+      "name": "ConfirmDialog",
+      "props": ["title", "message", "onConfirm", "onCancel", "variant"],
+      "layout": "Centered modal overlay. Backdrop: black/40 with backdrop-blur-sm. Dialog: GlassCard, max-w-[420px], with title, message, and two buttons (cancel secondary, confirm primary or error variant).",
+      "notes": "Backdrop fades in (opacity 0 to 1, 200ms). Dialog scales from 0.95 to 1 with spring animation. Escape key and backdrop click close the dialog."
+    }
+  ],
+  "breakpoints": {
+    "mobile": "<768px",
+    "tablet": "768px-1024px",
+    "desktop": ">=1024px"
+  },
+  "pages": {
+    "/login": {
+      "layout": "AuthLayout. Right panel contains: Logo + app name at top, 'Sign in to your account' heading, email FormField, password FormField, primary Button 'Sign in' full-width, divider, 'No account? Sign up' link below. Max-w-[400px] centered form.",
+      "components": ["AuthLayout", "FormField", "Button", "GlassCard"]
+    },
+    "/register": {
+      "layout": "AuthLayout. Right panel contains: Logo + app name at top, 'Create your account' heading, email FormField, password FormField, confirm password FormField, primary Button 'Create account' full-width, divider, 'Already have an account? Sign in' link below. Max-w-[400px] centered form.",
+      "components": ["AuthLayout", "FormField", "Button", "GlassCard"]
+    },
+    "/proposals": {
+      "layout": "AppShell > PageHeader (title: 'Proposals', action: Button 'New Proposal' linking to /proposals/new) > FilterBar (all, draft, sent, accepted, rejected) > grid of ProposalCards (2 columns on desktop, 1 on mobile, gap-16px). If no proposals, show EmptyState. SkeletonLoader while fetching.",
+      "components": ["AppShell", "Sidebar", "PageHeader", "FilterBar", "ProposalCard", "StatusBadge", "EmptyState", "SkeletonLoader"]
+    },
+    "/proposals/new": {
+      "layout": "AppShell > PageHeader (title: 'New Proposal', subtitle: 'Fill in the client details to generate a proposal') > ProposalForm centered with max-w-[640px].",
+      "components": ["AppShell", "Sidebar", "PageHeader", "ProposalForm", "FormField", "Button", "GlassCard"]
+    },
+    "/proposals/:id": {
+      "layout": "AppShell > PageHeader (title: client_name, subtitle: segment + service, action: row of ExportPDFButton + StatusBadge) > If no content: GenerateButton centered in a large empty area with EmptyState messaging. If content exists: vertical stack of 4 SectionEditor cards (introduction, scope, investment, next_steps) with 16px gap. GenerateButton at top-right to regenerate. Save all button at bottom.",
+      "components": ["AppShell", "Sidebar", "PageHeader", "SectionEditor", "GenerateButton", "ExportPDFButton", "StatusBadge", "Button", "GlassCard", "EmptyState", "SkeletonLoader"]
+    },
+    "/routines": {
+      "layout": "AppShell > PageHeader (title: 'Follow-up Routines', subtitle: 'Automated follow-up routine runs daily at 09:00', action: TriggerButton) > GlassCard containing RoutineLogRow list with divide-y separator. If no logs, EmptyState. SkeletonLoader while fetching. Responsive: on mobile, rows become stacked cards with key-value pairs instead of table columns.",
+      "components": ["AppShell", "Sidebar", "PageHeader", "TriggerButton", "RoutineLogRow", "StatusBadge", "GlassCard", "EmptyState", "SkeletonLoader", "Toast"]
+    }
+  },
+  "animations": {
+    "page_transition": "Fade-in with subtle translateY(-8px to 0). Duration 400ms. Easing: cubic-bezier(0.32, 0.72, 0, 1). Stagger page sections by 80ms.",
+    "card_hover": "scale(1.01) translateY(-2px) with elevated shadow. Spring: stiffness 300, damping 25. Duration ~250ms perceived.",
+    "button_press": "scale(0.98) translateY(1px) on :active. Spring: stiffness 400, damping 30. Instant response, 150ms release.",
+    "section_expand": "Height auto-interpolation using layout animation. Spring: stiffness 200, damping 25. Content fades in 200ms after height settles.",
+    "list_stagger": "Children mount with translateY(12px) + opacity(0) resolving to translateY(0) + opacity(1). Stagger: 80ms per item. Spring: stiffness 260, damping 20.",
+    "toast_enter": "translateY(100%) to translateY(0) + opacity 0 to 1. Spring: stiffness 300, damping 28. Auto-dismiss after 4s with opacity fade 300ms.",
+    "shimmer": "Linear gradient highlight translating left-to-right across skeleton surface. CSS animation 1.5s infinite linear. No JS re-renders.",
+    "glass_focus": "Input focus ring scales from 0.98 to 1.0 opacity with ring-2 ring-accent/20. Transition 200ms ease-out."
+  }
+}

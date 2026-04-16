@@ -1,0 +1,138 @@
+{
+  "stage": "performance",
+  "seo": {
+    "title_present": true,
+    "title_length": 56,
+    "title_value": "ProposalAI — Propostas comerciais com inteligencia artificial",
+    "meta_description_present": true,
+    "meta_description_length": 147,
+    "og_tags_present": true,
+    "og_tags": {
+      "og:title": "ProposalAI — Crie propostas comerciais com IA",
+      "og:description": "Gere propostas comerciais completas em minutos. Preencha os dados, a IA monta o texto, voce ajusta e exporta. Feito para freelancers, profissionais e agencias.",
+      "og:image": "MISSING",
+      "og:url": "MISSING"
+    },
+    "twitter_card": "MISSING",
+    "canonical_url": "NOT_SET",
+    "heading_hierarchy": "issues",
+    "heading_hierarchy_details": [
+      "Login page has two h1 tags (brand panel h1 + mobile h1) — should keep only one h1 per page",
+      "Register page has the same dual-h1 issue",
+      "Sidebar has an h1 (ProposalAI) which conflicts with per-page h1 headings — sidebar brand should be a div/span or aria-label, not h1",
+      "Proposals list, new proposal, proposal detail, and routines pages each have a proper single h1 — correct",
+      "EmptyState uses h3 without preceding h2 in some contexts (heading skip)"
+    ],
+    "semantic_html": "good",
+    "semantic_html_details": [
+      "AppShell uses <main> landmark — correct",
+      "Sidebar uses <aside> element — correct",
+      "TopBar uses <header> element — correct",
+      "Navigation uses <nav> with <ul>/<li> structure — correct",
+      "Forms use <form> elements with proper onSubmit — correct",
+      "Routines page uses <table> with <thead>/<tbody> — correct"
+    ],
+    "structured_data": "MISSING — no JSON-LD schema markup (SoftwareApplication or WebApplication)",
+    "robots_txt": "NOT_CHECKED — app-level, not in frontend source",
+    "sitemap": "NOT_CHECKED — app-level"
+  },
+  "performance": {
+    "estimated_lcp": "< 1.5s (good)",
+    "estimated_lcp_rationale": "Landing page is a lightweight spinner redirect. Auth pages render static forms with minimal JS. All pages are client-rendered but with small component trees. Fonts use display:swap preventing render-block.",
+    "estimated_cls": "< 0.05 (good)",
+    "estimated_cls_rationale": "Fonts use display:swap with next/font (automatic size-adjust). No images without dimensions. Skeleton loaders reserve layout space. No dynamic ad/banner injection.",
+    "estimated_inp": "< 100ms (good)",
+    "estimated_inp_rationale": "Interactions are simple form submissions and navigation. No heavy computation on click handlers. jsPDF is dynamically imported only on export click.",
+    "bundle_concerns": [
+      "framer-motion pinned to 'latest' — typically 30-50KB gzipped; large for the current usage (only animations, no layout animations visible). CSS animations already handle most motion. Consider removing if only used for simple transitions.",
+      "jspdf pinned to 'latest' — ~300KB gzipped but dynamically imported on demand (good pattern in proposals/[id]/page.tsx)",
+      "All dependencies use 'latest' version — production risk; pin exact versions for reproducible builds"
+    ],
+    "font_loading": {
+      "strategy": "next/font with display:swap — optimal",
+      "fonts": ["Outfit (variable)", "JetBrains Mono (variable)"],
+      "cls_risk": "minimal — next/font auto-generates size-adjust fallbacks"
+    },
+    "css_analysis": {
+      "approach": "Tailwind CSS v4 with @import 'tailwindcss' — tree-shakes unused styles",
+      "custom_css": "~195 lines of globals.css (animations, glass utilities, scrollbar) — acceptable size",
+      "backdrop_filter": "Used on glass/glass-card utilities — may cause GPU compositing on low-end devices but acceptable"
+    },
+    "rendering_strategy": {
+      "critical_issue": "ALL pages are 'use client' — no SSR/SSG content for search engines",
+      "impact": "Google may not index page content properly. The landing page (/) is a blank spinner that redirects via JS. Crawlers see an empty div.",
+      "affected_pages": ["/", "/login", "/register", "/proposals", "/proposals/new", "/proposals/:id", "/routines"]
+    },
+    "recommendations": [
+      {
+        "issue": "Landing page (/) renders empty spinner, no crawlable content",
+        "fix": "Add a proper landing/marketing page with SSR content, or implement middleware-based redirect so crawlers see meaningful content. Currently Google indexes an empty div with a spinner.",
+        "impact": "high"
+      },
+      {
+        "issue": "Missing og:image meta tag — link previews on social media show no image",
+        "fix": "Add og:image to layout.tsx metadata with a branded social card image (1200x630px recommended). Also add og:url and twitter:card meta tags.",
+        "impact": "high"
+      },
+      {
+        "issue": "Multiple h1 tags on login/register pages (brand panel + mobile view)",
+        "fix": "Change the sidebar/brand panel 'ProposalAI' from h1 to a div or span with appropriate styling. Keep only the page-specific h1. Sidebar brand should also be a div, not h1.",
+        "impact": "medium"
+      },
+      {
+        "issue": "Sidebar uses h1 for brand name, conflicting with per-page h1 headings",
+        "fix": "Replace <h1> in Sidebar component with <div> or <span> styled identically. The brand name is decorative navigation, not the page's primary heading.",
+        "impact": "medium"
+      },
+      {
+        "issue": "Missing Twitter Card meta tags",
+        "fix": "Add twitter:card, twitter:title, twitter:description, twitter:image to layout.tsx metadata object using the twitter property.",
+        "impact": "medium"
+      },
+      {
+        "issue": "No structured data (JSON-LD schema markup)",
+        "fix": "Add SoftwareApplication or WebApplication JSON-LD schema to layout.tsx for rich search results. Include name, description, applicationCategory, offers.",
+        "impact": "medium"
+      },
+      {
+        "issue": "framer-motion adds ~30-50KB gzipped to bundle — current animations could use CSS only",
+        "fix": "Evaluate if framer-motion is needed. Current visible animations (fade-in, shimmer, toast, spin) are all CSS-based in globals.css. If framer-motion is only used for simple opacity/transform transitions, replace with CSS and remove the dependency.",
+        "impact": "medium"
+      },
+      {
+        "issue": "All dependencies use 'latest' tag instead of pinned versions",
+        "fix": "Run 'npm ls' and pin all dependencies to exact versions in package.json for reproducible builds and to avoid unexpected breaking changes.",
+        "impact": "low"
+      },
+      {
+        "issue": "SVG icons inline in components lack aria-hidden attribute",
+        "fix": "Add aria-hidden='true' to decorative SVG icons (nav icons, button icons, empty state icon) so screen readers skip them. Icons that are the sole content of a button already have aria-label on the button (e.g., logout) — those are fine.",
+        "impact": "low"
+      },
+      {
+        "issue": "EmptyState uses h3 heading which may skip h2 in some page contexts",
+        "fix": "Make the heading level configurable via prop (default h2) or use a generic element with aria-level.",
+        "impact": "low"
+      }
+    ]
+  },
+  "accessibility": {
+    "score_estimate": "good",
+    "strengths": [
+      "FormField uses htmlFor + id linking with useId() — proper label association",
+      "FormField uses aria-describedby for error/helper text and aria-invalid for error state",
+      "Error messages use role='alert' for live region announcement",
+      "Logout button has aria-label='Sair' and title",
+      "Mobile hamburger button has dynamic aria-label (Abrir/Fechar menu)",
+      "Button component properly disables during loading state",
+      "Color contrast appears adequate (dark foreground on warm light background)"
+    ],
+    "issues": [
+      "Decorative SVG icons (nav items, button icons, empty state) missing aria-hidden='true' — screen readers may announce path data",
+      "Mobile menu overlay lacks focus trap — keyboard users can tab behind the overlay",
+      "No skip-to-content link at the top of the page",
+      "ConfirmDialog should trap focus and return focus to trigger on close",
+      "Login/Register brand panel SVG pattern lacks aria-hidden='true'"
+    ]
+  }
+}
