@@ -25,6 +25,12 @@ export const metadata: Metadata = {
     description:
       "Gere propostas comerciais completas em minutos. Preencha os dados, a IA monta o texto, voce ajusta e exporta. Feito para freelancers, profissionais e agencias.",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "ProposalAI — Propostas comerciais com IA",
+    description:
+      "Crie propostas profissionais em minutos. Preencha os dados do cliente, a IA gera o texto, voce edita e exporta em PDF.",
+  },
 };
 
 export default function RootLayout({

@@ -10,11 +10,14 @@ const router = express.Router();
 router.use(authMiddleware);
 
 // GET /api/routines/logs — list routine execution logs
+// NOTE: Returns all routine logs (admin-level endpoint). routine_logs has no
+// user_id column, so we cannot scope by user. Acceptable for single-tenant MVP.
 router.get('/logs', asyncHandler(async (req, res) => {
   const { rows } = await pool.query(
     `SELECT id, routine_name, triggered_by, status, proposals_affected,
             details, started_at, finished_at
      FROM routine_logs
+     WHERE routine_name = 'follow-up-routine'
      ORDER BY started_at DESC
      LIMIT 50`
   );
@@ -32,7 +35,7 @@ router.post('/follow-up/trigger', asyncHandler(async (req, res) => {
   );
 
   // Fire and forget — run in background
-  runFollowUpRoutineManual(log.id).catch(() => {});
+  runFollowUpRoutineManual(log.id, req.user.id).catch((err) => console.error('Follow-up routine error:', err));
 
   res.status(202).json({
     message: 'Follow-up routine triggered',
@@ -40,7 +43,7 @@ router.post('/follow-up/trigger', asyncHandler(async (req, res) => {
   });
 }));
 
-async function runFollowUpRoutineManual(logId) {
+async function runFollowUpRoutineManual(logId, userId) {
   const { generateFollowUp } = require('../services/groq');
 
   try {
@@ -49,7 +52,9 @@ async function runFollowUpRoutineManual(logId) {
        FROM proposals p
        JOIN users u ON u.id = p.user_id
        WHERE p.status = 'sent'
-         AND p.updated_at < NOW() - INTERVAL '3 days'`
+         AND p.updated_at < NOW() - INTERVAL '3 days'
+         AND p.user_id = $1`,
+      [userId]
     );
 
     const followUps = [];

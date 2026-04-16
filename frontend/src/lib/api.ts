@@ -49,8 +49,8 @@ class ApiClient {
     }
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: "Erro desconhecido" }));
-      const error = new Error(errorData.message ?? "Erro na requisição");
+      const errorData = await response.json().catch(() => ({ error: "Erro desconhecido" }));
+      const error = new Error(errorData.error ?? errorData.message ?? "Erro na requisição");
       (error as Error & { status: number }).status = response.status;
       throw error;
     }

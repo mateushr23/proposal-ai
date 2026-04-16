@@ -245,7 +245,7 @@ export default function ProposalDetailPage() {
             onClick={handleExportPDF}
             disabled={!hasContent}
             icon={
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 12v2h8v-2" />
                 <path d="M8 2v8" />
                 <path d="M5 7l3 3 3-3" />
@@ -271,7 +271,7 @@ export default function ProposalDetailPage() {
                 loading={generating}
                 onClick={handleGenerate}
                 icon={
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M9 2l1.5 4.5L15 8l-4.5 1.5L9 14l-1.5-4.5L3 8l4.5-1.5z" />
                   </svg>
                 }
@@ -292,7 +292,7 @@ export default function ProposalDetailPage() {
               onClick={handleGenerate}
               className={generating ? "relative overflow-hidden shimmer-effect" : ""}
               icon={
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M8 2l1.2 3.6L13 7l-3.8 1.4L8 12l-1.2-3.6L3 7l3.8-1.4z" />
                 </svg>
               }

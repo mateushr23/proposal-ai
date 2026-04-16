@@ -76,19 +76,19 @@ function ToastItem({
 
   const iconByType: Record<ToastType, ReactNode> = {
     success: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 8.5l3.5 3.5 6.5-8" />
       </svg>
     ),
     error: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="8" cy="8" r="6" />
         <path d="M8 5v3" />
         <circle cx="8" cy="11" r="0.5" fill="currentColor" />
       </svg>
     ),
     info: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="8" cy="8" r="6" />
         <path d="M8 7v4" />
         <circle cx="8" cy="5" r="0.5" fill="currentColor" />
@@ -121,7 +121,7 @@ function ToastItem({
         className="shrink-0 text-[var(--color-muted)] hover:text-[var(--color-foreground)] transition-colors"
         aria-label="Fechar"
       >
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
           <path d="M3 3l8 8M11 3l-8 8" />
         </svg>
       </button>

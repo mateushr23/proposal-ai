@@ -1,7 +1,7 @@
 const pool = require('../config/db');
 const { generateFollowUp } = require('./groq');
 
-async function runFollowUpRoutine(triggeredBy = 'cron') {
+async function runFollowUpRoutine(triggeredBy = 'cron', userId = null) {
   // Create log entry
   const { rows: [log] } = await pool.query(
     `INSERT INTO routine_logs (routine_name, triggered_by, status)
@@ -11,13 +11,16 @@ async function runFollowUpRoutine(triggeredBy = 'cron') {
 
   try {
     // Find proposals sent more than 3 days ago with no update
-    const { rows: staleProposals } = await pool.query(
-      `SELECT p.id, p.client_name, p.segment, p.service, u.email
+    // When userId is provided (manual trigger), scope to that user's proposals only
+    const baseQuery = `SELECT p.id, p.client_name, p.segment, p.service, u.email
        FROM proposals p
        JOIN users u ON u.id = p.user_id
        WHERE p.status = 'sent'
-         AND p.updated_at < NOW() - INTERVAL '3 days'`
-    );
+         AND p.updated_at < NOW() - INTERVAL '3 days'`;
+
+    const { rows: staleProposals } = userId
+      ? await pool.query(`${baseQuery} AND p.user_id = $1`, [userId])
+      : await pool.query(baseQuery);
 
     const followUps = [];
 

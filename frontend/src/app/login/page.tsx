@@ -54,7 +54,7 @@ export default function LoginPage() {
       {/* Brand panel - desktop only */}
       <div className="hidden lg:flex lg:w-[55%] items-center justify-center bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
-          <svg width="100%" height="100%">
+          <svg aria-hidden="true" width="100%" height="100%">
             <defs>
               <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
                 <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5" />
@@ -64,9 +64,9 @@ export default function LoginPage() {
           </svg>
         </div>
         <div className="relative z-10 max-w-md text-center px-8">
-          <h1 className="text-4xl font-semibold text-white tracking-tight">
+          <p className="text-4xl font-semibold text-white tracking-tight">
             ProposalAI
-          </h1>
+          </p>
           <p className="mt-3 text-lg text-white/80">
             Propostas comerciais com inteligencia artificial
           </p>
@@ -77,15 +77,15 @@ export default function LoginPage() {
       <div className="flex w-full lg:w-[45%] items-center justify-center px-4 py-12 bg-[var(--color-background)]">
         <div className="w-full max-w-[400px]">
           <div className="mb-8 lg:hidden text-center">
-            <h1 className="text-2xl font-semibold text-[var(--color-foreground)] tracking-tight">
+            <p className="text-2xl font-semibold text-[var(--color-foreground)] tracking-tight">
               ProposalAI
-            </h1>
+            </p>
           </div>
 
           <GlassCard>
-            <h2 className="text-xl font-semibold text-[var(--color-foreground)] mb-6">
+            <h1 className="text-xl font-semibold text-[var(--color-foreground)] mb-6">
               Acesse sua conta
-            </h2>
+            </h1>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <FormField

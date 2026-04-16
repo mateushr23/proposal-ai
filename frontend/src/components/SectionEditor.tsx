@@ -58,7 +58,7 @@ export function SectionEditor({ title, content, onSave }: SectionEditorProps) {
             size="sm"
             onClick={() => setEditing(true)}
             icon={
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9.5 2.5l2 2-7 7H2.5v-2l7-7z" />
               </svg>
             }

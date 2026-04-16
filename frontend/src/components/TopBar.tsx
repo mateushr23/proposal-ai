@@ -39,7 +39,7 @@ export function TopBar() {
           className="text-[var(--color-foreground)] p-1"
           aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             {menuOpen ? (
               <>
                 <path d="M6 6l12 12" />

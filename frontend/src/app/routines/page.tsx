@@ -145,7 +145,7 @@ export default function RoutinesPage() {
           loading={triggering}
           onClick={() => setConfirmOpen(true)}
           icon={
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="5,3 13,8 5,13" />
             </svg>
           }

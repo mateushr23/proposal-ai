@@ -15,7 +15,7 @@ const navItems: NavItem[] = [
     href: "/proposals",
     label: "Propostas",
     icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="2" width="14" height="16" rx="2" />
         <path d="M7 6h6M7 10h6M7 14h4" />
       </svg>
@@ -25,7 +25,7 @@ const navItems: NavItem[] = [
     href: "/proposals/new",
     label: "Nova proposta",
     icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="10" cy="10" r="7" />
         <path d="M10 7v6M7 10h6" />
       </svg>
@@ -35,7 +35,7 @@ const navItems: NavItem[] = [
     href: "/routines",
     label: "Rotinas",
     icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="10" cy="10" r="7" />
         <path d="M10 6v4l2.5 2.5" />
       </svg>
@@ -57,9 +57,9 @@ export function Sidebar() {
   return (
     <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-full w-60 glass z-40">
       <div className="p-6">
-        <h1 className="text-xl font-semibold tracking-tight text-[var(--color-foreground)]">
+        <span className="text-xl font-semibold tracking-tight text-[var(--color-foreground)]">
           ProposalAI
-        </h1>
+        </span>
       </div>
 
       <nav className="flex-1 px-3">
@@ -105,7 +105,7 @@ export function Sidebar() {
             aria-label="Sair"
             title="Sair"
           >
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M6 15H4a2 2 0 01-2-2V5a2 2 0 012-2h2" />
               <path d="M11 12l3-3-3-3" />
               <path d="M14 9H7" />

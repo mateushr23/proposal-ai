@@ -10,6 +10,7 @@ export function EmptyState({ title, description, action }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-16 animate-fade-in-up">
       <svg
+        aria-hidden="true"
         className="mb-4 text-[var(--color-muted)]"
         width="48"
         height="48"
