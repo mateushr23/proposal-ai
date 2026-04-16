@@ -1,0 +1,387 @@
+{
+  "stage": "decomposition",
+  "subtasks": [
+    {
+      "id": 1,
+      "title": "Database schema and migrations",
+      "agent": "backend-developer",
+      "acceptance_criteria": [
+        "Postgres tables users, proposals, routine_logs exist with correct columns and types per spec",
+        "users.id is UUID with default gen_random_uuid()",
+        "proposals.content is JSONB",
+        "proposals.status is CHECK constraint with values draft, sent, accepted, rejected",
+        "routine_logs has started_at and finished_at timestamp columns",
+        "Foreign key from proposals.user_id to users.id with ON DELETE CASCADE",
+        "Migration files run idempotently via npm script"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": 2,
+      "title": "Auth endpoints (register + login) with JWT middleware",
+      "agent": "backend-developer",
+      "acceptance_criteria": [
+        "POST /api/auth/register creates user and returns JWT token",
+        "POST /api/auth/login validates credentials and returns JWT token",
+        "Passwords are hashed with bcrypt (cost factor >= 10)",
+        "JWT contains user id and email, expires in 7 days",
+        "Auth middleware extracts and verifies JWT from Authorization header",
+        "Protected routes return 401 without valid token",
+        "Duplicate email registration returns 409"
+      ],
+      "depends_on": [1]
+    },
+    {
+      "id": 3,
+      "title": "Proposal CRUD routes",
+      "agent": "backend-developer",
+      "acceptance_criteria": [
+        "GET /api/proposals returns all proposals for authenticated user",
+        "GET /api/proposals/:id returns single proposal owned by user (404 if not found, 403 if not owner)",
+        "POST /api/proposals creates a draft proposal with client_name, segment, service, estimated_value, deadline",
+        "PUT /api/proposals/:id updates proposal fields including content (JSONB)",
+        "PATCH /api/proposals/:id/status updates only the status field",
+        "DELETE /api/proposals/:id soft-deletes or hard-deletes proposal owned by user",
+        "All routes require authentication"
+      ],
+      "depends_on": [1, 2]
+    },
+    {
+      "id": 4,
+      "title": "Groq proposal generation route",
+      "agent": "backend-developer",
+      "acceptance_criteria": [
+        "POST /api/proposals/:id/generate calls Groq API with llama-3.3-70b model",
+        "Structured prompt includes client_name, segment, service, estimated_value, deadline",
+        "Groq response is parsed as JSON with sections: introduction, scope, investment, next_steps",
+        "Generated content is saved to proposals.content JSONB field",
+        "Returns the generated content in the response body",
+        "Handles Groq API errors gracefully with 502 status",
+        "Route requires authentication and proposal ownership"
+      ],
+      "depends_on": [3]
+    },
+    {
+      "id": 5,
+      "title": "Follow-up routine with node-cron",
+      "agent": "backend-developer",
+      "acceptance_criteria": [
+        "node-cron job runs daily at 09:00 America/Sao_Paulo timezone",
+        "Routine queries proposals with status=sent and updated_at older than 3 days",
+        "For each matching proposal, calls Groq to generate personalized follow-up message",
+        "Each execution is logged in routine_logs with routine_name=follow-up-routine",
+        "Log includes triggered_by (cron or manual), status, proposals_affected count, and details JSONB",
+        "POST /api/routines/follow-up/trigger fires the routine manually (fire-and-forget, returns 202)",
+        "GET /api/routines/logs returns execution history ordered by started_at DESC"
+      ],
+      "depends_on": [3, 4]
+    },
+    {
+      "id": 6,
+      "title": "Health check endpoint and Express app setup",
+      "agent": "backend-developer",
+      "acceptance_criteria": [
+        "GET /api/health returns { status: 'ok', timestamp: ISO string }",
+        "Express app has CORS configured for frontend origin",
+        "JSON body parser is configured",
+        "Error handling middleware returns structured error responses",
+        "Environment variables loaded from .env (PORT, DATABASE_URL, JWT_SECRET, GROQ_API_KEY)"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": 7,
+      "title": "API client and auth hooks (frontend)",
+      "agent": "frontend-developer",
+      "acceptance_criteria": [
+        "Axios or fetch wrapper configured with base URL from env var",
+        "Auth interceptor attaches JWT token from localStorage to every request",
+        "useAuth hook exposes login, register, logout, user, isAuthenticated",
+        "Token is persisted in localStorage and cleared on logout",
+        "401 responses trigger automatic logout and redirect to /login"
+      ],
+      "depends_on": [2]
+    },
+    {
+      "id": 8,
+      "title": "Login and signup pages",
+      "agent": "frontend-developer",
+      "acceptance_criteria": [
+        "/login page has email and password fields with form validation",
+        "/register page has email, password, and confirm password fields",
+        "Successful login redirects to /proposals",
+        "Successful register redirects to /proposals",
+        "Error messages display for invalid credentials or duplicate email",
+        "Unauthenticated users are redirected to /login from protected routes"
+      ],
+      "depends_on": [7]
+    },
+    {
+      "id": 9,
+      "title": "Proposal creation form",
+      "agent": "frontend-developer",
+      "acceptance_criteria": [
+        "/proposals/new page has fields: client_name, segment, service, estimated_value, deadline",
+        "All fields have client-side validation (required, value >= 0, valid date)",
+        "Submit creates proposal via API and redirects to proposal result page",
+        "Loading state shown during submission",
+        "Error state shown if API call fails"
+      ],
+      "depends_on": [7]
+    },
+    {
+      "id": 10,
+      "title": "Proposal result and section editor",
+      "agent": "frontend-developer",
+      "acceptance_criteria": [
+        "/proposals/:id page displays generated proposal content by section",
+        "Generate button triggers AI generation and shows loading spinner",
+        "Each section (introduction, scope, investment, next_steps) is individually editable",
+        "Edits are saved via PUT /api/proposals/:id with updated content JSONB",
+        "Save button persists all section edits at once",
+        "Status badge shows current proposal status"
+      ],
+      "depends_on": [7]
+    },
+    {
+      "id": 11,
+      "title": "Saved proposals list page",
+      "agent": "frontend-developer",
+      "acceptance_criteria": [
+        "/proposals page lists all user proposals with client_name, status, created_at",
+        "Proposals with status=sent and updated_at > 3 days show pending follow-up indicator",
+        "Click on a proposal navigates to /proposals/:id",
+        "Status filter dropdown (all, draft, sent, accepted, rejected)",
+        "Empty state shown when no proposals exist"
+      ],
+      "depends_on": [7]
+    },
+    {
+      "id": 12,
+      "title": "Routines panel page",
+      "agent": "frontend-developer",
+      "acceptance_criteria": [
+        "/routines page displays execution history from GET /api/routines/logs",
+        "Each log entry shows routine_name, triggered_by, status, proposals_affected, started_at, finished_at",
+        "Manual trigger button calls POST /api/routines/follow-up/trigger",
+        "Trigger button shows confirmation before firing",
+        "Success toast after manual trigger"
+      ],
+      "depends_on": [7]
+    },
+    {
+      "id": 13,
+      "title": "PDF export with jsPDF",
+      "agent": "frontend-developer",
+      "acceptance_criteria": [
+        "Export PDF button on /proposals/:id page",
+        "PDF includes proposal header with client_name, date, and status",
+        "PDF renders all sections (introduction, scope, investment, next_steps) with proper formatting",
+        "PDF is generated client-side using jsPDF (no server round-trip)",
+        "Downloaded file is named proposal-{client_name}-{date}.pdf"
+      ],
+      "depends_on": [10]
+    },
+    {
+      "id": 14,
+      "title": "Docker and docker-compose setup",
+      "agent": "backend-developer",
+      "acceptance_criteria": [
+        "Dockerfile for backend (Node.js multi-stage build)",
+        "Dockerfile for frontend (Next.js standalone output)",
+        "docker-compose.yml defines services: frontend, backend, postgres",
+        "Postgres service uses named volume for data persistence",
+        "Backend depends_on postgres with healthcheck",
+        "Environment variables passed via .env file",
+        "docker compose up builds and runs all services successfully"
+      ],
+      "depends_on": [5, 13]
+    }
+  ],
+  "assumptions": [
+    "Groq API key is provided as environment variable GROQ_API_KEY",
+    "Postgres runs locally or via Docker; connection string in DATABASE_URL",
+    "JWT secret is a strong random string provided via JWT_SECRET env var",
+    "Frontend runs on port 3000, backend on port 3001",
+    "No email sending for follow-up — messages are stored in routine_logs.details for user to copy",
+    "No rate limiting on Groq calls (can be added later)",
+    "No password reset flow in MVP",
+    "No real-time updates — user refreshes to see routine results",
+    "Proposal delete is hard delete (no soft delete / trash)",
+    "Single-tenant — each user sees only their own proposals"
+  ],
+  "open_questions": [],
+  "api_contract": {
+    "endpoints": [
+      {
+        "method": "GET",
+        "path": "/api/health",
+        "body": null,
+        "response": { "status": "string", "timestamp": "string" },
+        "auth": false
+      },
+      {
+        "method": "POST",
+        "path": "/api/auth/register",
+        "body": { "email": "string", "password": "string" },
+        "response": { "token": "string", "user": { "id": "string", "email": "string" } },
+        "auth": false
+      },
+      {
+        "method": "POST",
+        "path": "/api/auth/login",
+        "body": { "email": "string", "password": "string" },
+        "response": { "token": "string", "user": { "id": "string", "email": "string" } },
+        "auth": false
+      },
+      {
+        "method": "GET",
+        "path": "/api/proposals",
+        "body": null,
+        "response": {
+          "proposals": [
+            {
+              "id": "string",
+              "client_name": "string",
+              "segment": "string",
+              "service": "string",
+              "estimated_value": "number",
+              "deadline": "string (ISO date)",
+              "content": "object | null",
+              "status": "draft | sent | accepted | rejected",
+              "created_at": "string",
+              "updated_at": "string"
+            }
+          ]
+        },
+        "auth": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/proposals/:id",
+        "body": null,
+        "response": {
+          "id": "string",
+          "client_name": "string",
+          "segment": "string",
+          "service": "string",
+          "estimated_value": "number",
+          "deadline": "string (ISO date)",
+          "content": "object | null",
+          "status": "draft | sent | accepted | rejected",
+          "created_at": "string",
+          "updated_at": "string"
+        },
+        "auth": true
+      },
+      {
+        "method": "POST",
+        "path": "/api/proposals",
+        "body": {
+          "client_name": "string",
+          "segment": "string",
+          "service": "string",
+          "estimated_value": "number",
+          "deadline": "string (ISO date)"
+        },
+        "response": {
+          "id": "string",
+          "client_name": "string",
+          "segment": "string",
+          "service": "string",
+          "estimated_value": "number",
+          "deadline": "string (ISO date)",
+          "content": null,
+          "status": "draft",
+          "created_at": "string",
+          "updated_at": "string"
+        },
+        "auth": true
+      },
+      {
+        "method": "PUT",
+        "path": "/api/proposals/:id",
+        "body": {
+          "client_name": "string (optional)",
+          "segment": "string (optional)",
+          "service": "string (optional)",
+          "estimated_value": "number (optional)",
+          "deadline": "string (optional)",
+          "content": "object (optional)"
+        },
+        "response": {
+          "id": "string",
+          "client_name": "string",
+          "segment": "string",
+          "service": "string",
+          "estimated_value": "number",
+          "deadline": "string",
+          "content": "object | null",
+          "status": "string",
+          "created_at": "string",
+          "updated_at": "string"
+        },
+        "auth": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/proposals/:id/status",
+        "body": { "status": "draft | sent | accepted | rejected" },
+        "response": {
+          "id": "string",
+          "status": "string",
+          "updated_at": "string"
+        },
+        "auth": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/proposals/:id",
+        "body": null,
+        "response": { "message": "string" },
+        "auth": true
+      },
+      {
+        "method": "POST",
+        "path": "/api/proposals/:id/generate",
+        "body": null,
+        "response": {
+          "content": {
+            "introduction": "string",
+            "scope": "string",
+            "investment": "string",
+            "next_steps": "string"
+          }
+        },
+        "auth": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/routines/logs",
+        "body": null,
+        "response": {
+          "logs": [
+            {
+              "id": "string",
+              "routine_name": "string",
+              "triggered_by": "cron | manual",
+              "status": "running | completed | failed",
+              "proposals_affected": "number",
+              "details": "object | null",
+              "started_at": "string",
+              "finished_at": "string | null"
+            }
+          ]
+        },
+        "auth": true
+      },
+      {
+        "method": "POST",
+        "path": "/api/routines/follow-up/trigger",
+        "body": null,
+        "response": { "message": "string", "log_id": "string" },
+        "auth": true
+      }
+    ]
+  }
+}
