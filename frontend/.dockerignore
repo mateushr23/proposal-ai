@@ -1,0 +1,5 @@
+node_modules
+.next
+src/__tests__
+vitest.config.ts
+CLAUDE.md
